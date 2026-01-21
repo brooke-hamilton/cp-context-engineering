@@ -159,10 +159,10 @@ Context engineering and prompt engineering are related but distinct practices. H
 **Industry Perspectives:**
 
 > "Context engineering describes the core skill better: the art of providing all the context for the task to be plausibly solvable by the LLM"
-> — **Tobias Lütke**, CEO of Shopify
+> — **Tobias Lütke**, CEO of Shopify ([source](https://x.com/tolobi/status/1935533391097049470))
 
 > "+1 for context engineering over prompt engineering...the delicate art and science of filling the context window with just the right information"
-> — **Andrej Karpathy**, Co-founder of OpenAI
+> — **Andrej Karpathy**, Co-founder of OpenAI ([source](https://x.com/karpathy/status/1937902056596885727))
 
 Prompt engineering emerged when working with early language models where the primary interaction was crafting effective prompts. Context engineering represents the natural evolution as AI systems gained longer context windows, tool access, memory systems, and the ability to operate over extended time horizons. You're not just asking better questions — you're architecting comprehensive information environments.
 
@@ -198,7 +198,7 @@ Prompt engineering emerged when working with early language models where the pri
 
 **Empirical Evidence:** Research on the ACE (Agentic Context Engineering) Framework demonstrated a **+10.6% improvement on agent benchmarks** and **+8.6% on finance-specific tasks** simply through better context management. These gains came not from larger models or more compute, but from systematic context design.
 
-Perhaps most importantly: **"Most modern agentic system failures are context failures, not reasoning failures."** This insight, from analysis of production AI systems, reveals that when AI agents fail, it's typically not because they can't reason through problems — it's because they lack the right information, structured appropriately, at the right time. Context engineering addresses this root cause directly.
+Perhaps most importantly: **"Most modern agentic system failures are context failures, not reasoning failures."** ([source](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)) This insight, from analysis of production AI systems, reveals that when AI agents fail, it's typically not because they can't reason through problems — it's because they lack the right information, structured appropriately, at the right time. Context engineering addresses this root cause directly.
 
 ---
 
