@@ -1,6 +1,6 @@
 # Context Engineering Guide
 
-**A comprehensive introduction to context engineering for AI systems**
+A comprehensive introduction to context engineering for AI systems
 
 > **For**: Developers, technical writers, and engineering leaders  
 > **Goal**: Understand, identify, and implement context engineering patterns  
@@ -74,6 +74,7 @@ The guide is structured in three progressive tiers: skim the fundamentals if you
 **Navigation Strategy:** You can read progressively from start to finish for comprehensive understanding, or jump directly to tool-specific sections (§5 for Spec Kit, §6 for GitHub Copilot) if you need immediate practical guidance.
 
 **Symbol Key:**
+
 - 📖 Academic concept with research foundation
 - 🛠️ Practical pattern you can implement immediately
 - ⚠️ Common mistake to avoid
@@ -107,25 +108,15 @@ Context consists of six core components:
 
 1. **Instructions**: System prompts and directives
    - Example: "You are a Python expert helping with debugging"
-   
-2. **Knowledge**: Domain-specific information, documentation, reference materials
-   - Example: README files, API documentation, code comments
-   
-3. **Tools**: Functions and capabilities the LLM can invoke
-   - Example: File read, web search, code execution capabilities
-   
-4. **Memory**: Conversation history, persistent notes, state information
-   - Example: Previous exchanges, saved decisions, project context
-   
-5. **Query**: The immediate user input or task
-   - Example: "Fix the error on line 47"
-   
-6. **Metadata**: File paths, timestamps, structural markers
-   - Example: Repository structure, last modified dates, section headers
+2. **Knowledge**: Domain-specific information, documentation, reference materials. Example: README files, API documentation, code comments
+3. **Tools**: Functions and capabilities the LLM can invoke. Example: File read, web search, code execution capabilities
+4. **Memory**: Conversation history, persistent notes, state information. Example: Previous exchanges, saved decisions, project context
+5. **Query**: The immediate user input or task. Example: "Fix the error on line 47"
+6. **Metadata**: File paths, timestamps, structural markers. Example: Repository structure, last modified dates, section headers
 
 Mathematically, context can be represented as:
 
-```
+```text
 Context = Assemble(instructions, knowledge, tools, memory, state, query)
 ```
 
@@ -157,7 +148,7 @@ Understanding context as a structured assembly of components — rather than a s
 Context engineering and prompt engineering are related but distinct practices. Here's how they differ:
 
 | Aspect | Prompt Engineering | Context Engineering |
-|--------|-------------------|---------------------|
+| ------ | ----------------- | ------------------- |
 | **Scope** | Writing and optimizing instructions | Curating all information accessible during inference |
 | **Components** | Primarily system prompts and user messages | Instructions + tools + memory + data + history + metadata |
 | **Temporal** | Single-shot optimization | Iterative curation across multiple turns |
@@ -218,6 +209,7 @@ Perhaps most importantly: **"Most modern agentic system failures are context fai
 **Definition:** Progressive disclosure is the practice of providing information incrementally, matching context depth to task complexity and model capabilities. You start with essential information and expand only when needed.
 
 **Why It Works:**
+
 - **Attention Budget**: Language models have finite attention — they can't focus equally on all tokens in their context window. Position matters: information at the beginning and end of context receives more attention than content in the middle
 - **Signal-to-Noise Ratio**: Excessive context introduces noise that dilutes important information, making it harder for models to identify what actually matters
 - **Cognitive Load**: Even powerful models benefit from focused context that eliminates distractions
@@ -245,6 +237,7 @@ graph LR
 **Practical Example - Spec Kit:**
 
 When creating a feature specification:
+
 1. **Start:** Spec file with user story and acceptance criteria
 2. **Expand:** Add data model when entities are referenced
 3. **Expand:** Add API contracts when integration is discussed
@@ -261,6 +254,7 @@ Don't dump all documents into context immediately — let the agent request what
 **Definition:** Structured note-taking is the practice of maintaining explicit, machine-readable records of decisions, discoveries, and context that persists across interactions.
 
 **Why It Works:**
+
 - **Memory Limits**: AI conversations have bounded memory. Without explicit notes, important context gets lost when conversation history exceeds the context window
 - **Reproducibility**: Structured notes enable consistent behavior across multiple agents or sessions
 - **Transparency**: Explicit records make AI reasoning auditable and debuggable
@@ -303,6 +297,7 @@ graph TD
 **Practical Example - GitHub Copilot:**
 
 In `.github/agents/copilot-instructions.md`:
+
 ```markdown
 ## Context Notes
 
@@ -331,6 +326,7 @@ This persistent context helps Copilot maintain consistency across sessions.
 **Definition:** Attention budget management is the practice of optimizing how limited model attention is allocated across context, prioritizing high-signal information and managing context window usage strategically.
 
 **The Core Problem:**
+
 - Modern models have large context windows (100K+ tokens), but **attention is not uniform**
 - Information in the "middle" of long context gets less attention (the "lost in the middle" phenomenon)
 - Every token added to context dilutes the attention given to other tokens
@@ -338,8 +334,9 @@ This persistent context helps Copilot maintain consistency across sessions.
 
 **Three Strategies:**
 
-**1. Position Optimization**
-```
+#### 1. Position Optimization
+
+```text
 [High Attention] System Instructions
 [High Attention] Recent Conversation
 [Medium Attention] Key Documents
@@ -351,16 +348,18 @@ This persistent context helps Copilot maintain consistency across sessions.
 
 Place critical information at the beginning (establishes frame) and end (immediately relevant to query). Place bulk reference material in the middle where attention decay matters less.
 
-**2. Context Pruning**
+#### 2. Context Pruning
 
 Actively remove information that's no longer relevant:
+
 - ✅ Keep: Current task context, recent decisions, active file contents
 - ⚠️ Prune: Completed task discussions, outdated code versions, redundant explanations
 - ❌ Remove: Unrelated conversation history, speculative discussions that didn't pan out
 
-**3. Chunking and Summarization**
+#### 3. Chunking and Summarization
 
 Instead of loading entire files:
+
 - Load specific line ranges relevant to the current task
 - Summarize historical context rather than replaying full conversations
 - Use structured references: "See file X, function Y" instead of pasting entire file
@@ -368,7 +367,8 @@ Instead of loading entire files:
 **Practical Example - Attention Allocation:**
 
 ❌ **Poor attention budget:**
-```
+
+```text
 Context (50K tokens):
 - 20K: Full source code dump of 10 files
 - 15K: Complete conversation history
@@ -377,7 +377,8 @@ Context (50K tokens):
 ```
 
 ✅ **Optimized attention budget:**
-```
+
+```text
 Context (15K tokens):
 - 3K: System instructions + current task (top)
 - 5K: Relevant code sections (lines 100-150 of 2 files)
@@ -387,11 +388,13 @@ Context (15K tokens):
 ```
 
 **Measurement:** Track context efficiency by monitoring:
+
 - **Context-to-Task Ratio**: What percentage of context is directly relevant to the current task?
 - **Success Rate**: Are tasks succeeding with less context?
 - **Token Usage**: Are you approaching context limits unnecessarily?
 
 **Tool Support:**
+
 - **Spec Kit**: Uses progressive phases (outline → details) to avoid context bloat
 - **GitHub Copilot**: Automatically selects relevant files based on current work
 - **Claude**: Provides token counts to help you manage context budget
@@ -441,12 +444,14 @@ graph LR
     style I fill:#fff4e1
 ```
 
-**🛠️ Spec Kit Implementation**: This very guide follows ACE! 
+**🛠️ Spec Kit Implementation**: This very guide follows ACE!
+
 - Generation: spec.md created
 - Reflection: research.md analyzes requirements
 - Curation: plan.md, data-model.md, contracts/ add structured layers
 
 **🛠️ Copilot Implementation**: Iterative instruction file refinement
+
 - Generate: Initial `.github/prompts/typescript.instructions.md`
 - Reflect: Observe failure modes in practice
 - Curate: Add specific rules addressing observed gaps (don't replace existing rules)
@@ -454,12 +459,14 @@ graph LR
 **Code Example**:
 
 ❌ **Naive Summarization** (loses details):
+
 ```markdown
 <!-- After 3 iterations -->
 Summary: The system should be secure, scalable, and user-friendly.
 ```
 
 ✅ **Structured Updates** (accumulates details):
+
 ```markdown
 <!-- After 3 iterations -->
 Security Requirements:
@@ -484,12 +491,14 @@ Scalability Requirements:
 **Solution**: Strategic compaction that preserves high-signal information while discarding redundant content.
 
 **What to Preserve**:
+
 - Architectural decisions and rationale
 - Bugs discovered and their fixes
 - User preferences and constraints
 - Key insights from explorations
 
 **What to Discard**:
+
 - Redundant outputs (multiple similar code attempts)
 - Superseded work (old versions replaced by better ones)
 - Verbose explanations (keep conclusions, drop derivations)
@@ -535,11 +544,13 @@ def compact_context(conversation_history):
 **Solution**: Hybrid retrieval strategy that balances preparation with laziness.
 
 **Pre-Compute** (always available, minimal tokens):
+
 - High-level project structure (directory tree)
 - File metadata (paths, sizes, last modified)
 - Index of available documentation
 
 **Just-in-Time** (load on demand, targeted tokens):
+
 - Specific file contents
 - Detailed documentation sections
 - Data query results
@@ -564,13 +575,15 @@ graph TD
     style End fill:#e8f5e8
 ```
 
-**🛠️ Spec Kit Implementation**: 
+**🛠️ Spec Kit Implementation**:
+
 - Phase 0: Load only spec.md → generate research.md
 - Phase 1: Load spec + research → generate data-model.md, contracts/
 - Phase 2: Load all artifacts → generate tasks.md
 - Each phase loads only what's needed for that stage
 
 **🛠️ Copilot Implementation**:
+
 - Start with workspace index (embeddings)
 - Use glob patterns to locate relevant files
 - Read specific line ranges when details needed
@@ -591,17 +604,20 @@ graph TD
 **Implementation Approaches**:
 
 **File-Based** (simple, portable):
+
 - `NOTES.md`: General observations and discoveries
 - `DECISIONS.md`: Architectural choices with rationale
 - `TODO.md`: Pending tasks and blockers
 - `CONTEXT.md`: Quick-reference project state
 
 **Tool-Based** (sophisticated, queryable):
+
 - Memory Tool (Claude): Query/insert semantic memory
 - MemGPT: Tiered memory (working, short-term, long-term)
 - Mem0: Cross-session memory with retrieval
 
 **Example**: Claude playing Pokémon for **1,234+ game steps** using persistent notes. Notes tracked:
+
 - Current objective and progress
 - Map layout and discovered locations
 - NPC interactions and their information
@@ -669,17 +685,20 @@ graph TD
 ```
 
 **Benefits**:
+
 - **Clean Separation**: Each agent has focused, relevant context
 - **Specialized Context**: Research agent loads papers, implementation agent loads code
 - **Summary Compaction**: Sub-agents return compressed summaries (1K-2K tokens) from deep explorations (10K-50K tokens)
 - **Parallel Execution**: Independent sub-agents can run simultaneously
 
 **Trade-Offs**:
+
 - **Coordination Overhead**: Main agent must manage sub-agent communication
 - **Information Loss**: Summaries may omit details the main agent needs
 - **Complexity**: More moving parts to monitor and debug
 
-**🛠️ Spec Kit Implementation**: 
+**🛠️ Spec Kit Implementation**:
+
 ```markdown
 Main agent (speckit.plan) dispatches:
 - Sub-agent for research phase (10K tokens research.md exploration)
@@ -701,17 +720,20 @@ Main agent (speckit.plan) dispatches:
 **Solution**: MCP servers provide uniform interfaces for context providers.
 
 **MCP Server Types**:
+
 - **Database MCP**: Query SQL/NoSQL databases, return results as structured context
 - **Filesystem MCP**: Navigate directories, read files, watch for changes
 - **API MCP**: Fetch data from REST/GraphQL endpoints
 - **Documentation MCP**: Search knowledge bases, wikis, docs sites
 
 **Benefits**:
+
 - **Interoperability**: Same MCP server works across Claude, Copilot, custom agents
 - **Reusability**: Write server once, use everywhere
 - **Consistent Patterns**: Developers learn MCP patterns, not tool-specific APIs
 
 **Example Contract** (Database MCP):
+
 ```typescript
 // Input: Context retrieval request
 {
@@ -731,6 +753,7 @@ Main agent (speckit.plan) dispatches:
 ```
 
 **🛠️ Implementations**:
+
 - **fastmcp**: Python framework for rapid MCP server development
 - **mcp-agent**: Agent-first MCP implementation
 - **modelcontextprotocol/servers**: Official MCP server collection
@@ -752,7 +775,7 @@ Spec Kit is not a prompt — it's a complete context delivery architecture. Unde
 ### 5.2 Mapping Table: Academic Concepts → Spec Kit Features
 
 | Academic Concept | Spec Kit Feature | File/Directory | Pattern Applied |
-|-----------------|------------------|----------------|-----------------|
+| ---------------- | ---------------- | -------------- | --------------- |
 | **Structured Incremental Updates** | Phase-based workflow | `plan.md`, `research.md`, `data-model.md` | ACE Framework (§4.1) |
 | **Structured Note-Taking** | Feature directories | `specs/[###-name]/` | Agentic Memory (§4.4) |
 | **Context Organization** | Templates | `.specify/templates/*.md` | Structural Sensitivity |
@@ -792,6 +815,7 @@ Features ship in incremental, testable stages.
 ```
 
 **Failure Modes Prevented**:
+
 - **Context Poisoning**: Bad requirements can't enter the system
 - **Context Clash**: Conflicting priorities resolved upfront
 - **Context Drift**: Project maintains consistent direction
@@ -805,22 +829,26 @@ Features ship in incremental, testable stages.
 **Solution**: Progressive phases where each stage loads only what's necessary for its work.
 
 **Phase 0 - Research** (minimal context):
+
 - **Load**: `spec.md` only (user story + acceptance criteria)
 - **Generate**: `research.md` (academic sources, best practices)
 - **Context Size**: ~5K tokens
 
 **Phase 1 - Design** (expanded context):
+
 - **Load**: `spec.md` + `research.md`
 - **Generate**: `data-model.md`, `contracts/outline.md`, `quickstart.md`
 - **Context Size**: ~15K tokens
 
 **Phase 2 - Implementation** (full context):
+
 - **Load**: All prior artifacts + constitution + templates
 - **Generate**: `tasks.md` (detailed implementation plan)
 - **Context Size**: ~30K tokens
 
 **Directory Structure**:
-```
+
+```text
 specs/1-feature-name/
 ├── spec.md                  # Phase 0 input
 ├── research.md              # Phase 0 output → Phase 1 input
@@ -832,6 +860,7 @@ specs/1-feature-name/
 ```
 
 **Failure Modes Prevented**:
+
 - **Context Distraction**: Agent focuses on current phase, not future concerns
 - **Attention Dilution**: Context budget spent on immediately relevant information
 
@@ -871,32 +900,38 @@ specs/1-feature-name/
 ### 5.6 Try It Yourself: Implement Context Engineering in Your Project
 
 **Step 1**: Create directory structure
+
 ```bash
 mkdir -p .specify/memory .specify/templates specs
 ```
 
 **Step 2**: Write your constitution
+
 ```bash
 # .specify/memory/constitution.md - your project's core principles
 ```
 
 **Step 3**: Copy templates from this repository
+
 ```bash
 # Get plan-template.md, data-model-template.md, etc.
 ```
 
 **Step 4**: Create your first spec
+
 ```bash
 mkdir specs/1-feature-name
 # Write specs/1-feature-name/spec.md
 ```
 
 **Step 5**: Run planning workflow
+
 ```bash
 # Use Spec Kit's /speckit.plan command or adapt the workflow
 ```
 
 **Validation Checklist**:
+
 - [ ] Constitution defines 3-6 core principles
 - [ ] Templates have clear section headers
 - [ ] Spec includes user story + acceptance criteria
@@ -911,6 +946,7 @@ mkdir specs/1-feature-name
 ### 6.1 Overview: Copilot as Context Manager
 
 GitHub Copilot manages context across multiple layers:
+
 - **Workspace Indexing**: Pre-computed embeddings of all files
 - **Instruction Files**: Persistent rules loaded per file type
 - **Conversation History**: Recent exchanges with compaction
@@ -921,7 +957,7 @@ This hybrid approach balances pre-computation (fast but fixed) with just-in-time
 ### 6.2 Mapping Table: Academic Concepts → Copilot Features
 
 | Academic Concept | Copilot Feature | Implementation | Pattern Applied |
-|-----------------|------------------|----------------|-----------------|
+| ---------------- | --------------- | -------------- | --------------- |
 | **Context Rot Prevention** | Instruction files | `.github/prompts/*.instructions.md` | Persistent System Prompts |
 | **Attention Budget Management** | Workspace indexing | Pre-computed embeddings | Pre-Inference Retrieval |
 | **Tool Use (ReAct)** | Tool calling | `semantic_search`, `read_file`, `grep_search` | Dynamic Context Loading |
@@ -974,11 +1010,12 @@ async function getUser(id: string): Promise<User> {
   // Implementation
 }
 ```
+
 </examples>
 </instructions>
-```
 
 **Failure Modes Prevented**:
+
 - **Context Confusion**: Inconsistent type practices across files
 - **Context Distraction**: Suggestions for irrelevant JavaScript patterns
 
@@ -991,16 +1028,19 @@ async function getUser(id: string): Promise<User> {
 **Solution**: Three-tier retrieval strategy.
 
 **Tier 1: Pre-Indexed Embeddings** (always loaded, minimal tokens)
+
 - Workspace structure indexed at session start
 - File paths, imports, exports, signatures
 - Enables fast semantic search across entire codebase
 
 **Tier 2: Glob Patterns and Grep** (medium specificity, moderate tokens)
+
 - `file_search("**/*.ts")` finds TypeScript files
 - `grep_search("UserRepository")` finds specific classes
 - Returns file paths and line numbers, not full contents
 
 **Tier 3: Targeted Read** (high specificity, high tokens)
+
 - `read_file("/src/users/repository.ts", 45, 80)` loads specific lines
 - Only fetch what's needed for the current task
 
@@ -1021,6 +1061,7 @@ Copilot: [calls read_file("src/users/repository.ts", 45, 62)]
 ```
 
 **Failure Modes Prevented**:
+
 - **Attention Dilution**: Context budget spent on relevant code only
 - **Context Rot**: Avoids loading thousands of lines unnecessarily
 
@@ -1029,6 +1070,7 @@ Copilot: [calls read_file("src/users/repository.ts", 45, 62)]
 ### 6.5 Example: Tool Calling for Dynamic Context
 
 **Available Tools**:
+
 - `semantic_search`: Find files by concept/keyword
 - `read_file`: Load specific file sections
 - `grep_search`: Text search with regex
@@ -1065,17 +1107,20 @@ Response: "Authentication errors are handled in middleware/auth.ts..."
 ### 6.6 Try It Yourself: Improve Your Copilot Context
 
 **Step 1**: Create instructions directory
+
 ```bash
 mkdir -p .github/prompts
 ```
 
 **Step 2**: Write language-specific instructions
+
 ```bash
 # .github/prompts/typescript.instructions.md
 # Include: rules, conventions, examples
 ```
 
 **Step 3**: Add project-specific context
+
 ```markdown
 <project>
 This is a REST API for user management built with Express and TypeScript.
@@ -1089,6 +1134,7 @@ This is a REST API for user management built with Express and TypeScript.
 ```
 
 **Step 4**: Test with Copilot
+
 ```bash
 # Open a TypeScript file
 # Ask: "Explain our authentication approach"
@@ -1096,11 +1142,13 @@ This is a REST API for user management built with Express and TypeScript.
 ```
 
 **Step 5**: Iterate based on failure modes
+
 - Missing rule? Add to `<rules>` section
 - Inconsistent patterns? Add example to `<examples>` section
 - Wrong architecture assumptions? Clarify in `<architecture>` section
 
 **Validation Checklist**:
+
 - [ ] Instruction file exists for primary language(s)
 - [ ] Rules section covers top 5 coding conventions
 - [ ] At least 2 code examples showing preferred patterns
@@ -1170,6 +1218,7 @@ This section explores cutting-edge research and emerging patterns for experience
 - **CompAct**: Combines compression with abstractive summarization
 
 **The Trade-Off**: Compression introduces artifacts. A perfectly compressed context might lose:
+
 - Edge case details needed for corner cases
 - Nuanced relationships between concepts
 - Historical context explaining why decisions were made
@@ -1195,7 +1244,7 @@ This section explores cutting-edge research and emerging patterns for experience
 
 **Code Dependency Example**:
 
-```
+```text
 UserController.ts → UserService.ts → UserRepository.ts → Database.ts
                   ↓
                   AuthMiddleware.ts → JWT.ts
@@ -1209,33 +1258,37 @@ When modifying `UserController`, graph-based retrieval loads the entire dependen
 
 ### 7.4 Future Directions 🔮
 
-**1. Ultra-Long Context Windows (1M+ tokens)**
+#### 1. Ultra-Long Context Windows (1M+ tokens)
 
 Current models approach 200K-1M token windows. Implications:
+
 - **Context engineering becomes memory management** rather than careful curation
 - **Compression becomes less critical** but attention optimization remains vital
 - **New failure modes**: "Lost in the vast middle" — drowning in too much context
 - **Opportunity**: Entire codebases, documentation sets, or conversation histories in context
 
-**2. Multi-Modal Context**
+#### 2. Multi-Modal Context
 
 AI systems increasingly process images, audio, video, and code simultaneously:
+
 - **Image Context**: Diagrams, screenshots, UI mockups as first-class context
 - **Audio Context**: Meeting recordings, voice notes as persistent memory
 - **Video Context**: Tutorial videos, demo walkthroughs for learning agent behavior
 - **Challenge**: Token equivalence (How many tokens is an image worth?)
 
-**3. Continuous Learning from Context**
+#### 3. Continuous Learning from Context
 
 Future systems may automatically extract patterns from context history:
+
 - **Auto-Constitution**: Derive principles from observed team patterns
 - **Pattern Mining**: Discover common failure modes from debugging history
 - **Preference Learning**: Infer user preferences from context interactions
 - **Challenge**: Privacy, security, and maintaining human oversight
 
-**4. Context Markets**
+#### 4. Context Markets
 
 Reusable, shareable context packages:
+
 - **MCP Servers** (early example): Pre-built context providers for databases, APIs, tools
 - **Context Templates**: Industry-specific context structures (healthcare, finance, legal)
 - **Trained Contexts**: Fine-tuned retrievers for domain-specific knowledge
@@ -1243,6 +1296,7 @@ Reusable, shareable context packages:
 - **Challenge**: Standardization, quality assurance, licensing
 
 **Research Frontier**: Track latest developments in:
+
 - arXiv pre-prints (context engineering, RAG, multi-agent systems)
 - Anthropic, OpenAI, Microsoft engineering blogs
 - GitHub trending in awesome-context-engineering repositories
@@ -1253,61 +1307,72 @@ Reusable, shareable context packages:
 
 ### 8.1 Academic Papers
 
-**Context Engineering 2.0: The Context of Context Engineering**
+#### Context Engineering 2.0: The Context of Context Engineering
+
 - Authors: Qishuo Hua, Lyumanshan Ye, Dayuan Fu, et al.
-- URL: https://arxiv.org/abs/2510.26493
+- URL: <https://arxiv.org/abs/2510.26493>
 - Published: October 30, 2025
 - Key Topics: Historical evolution, philosophical foundations, human-machine interaction paradigms
 
-**Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models**
+#### Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models
+
 - Authors: Qizheng Zhang, Changran Hu, Shubhangi Upasani, et al.
-- URL: https://arxiv.org/abs/2510.04618
+- URL: <https://arxiv.org/abs/2510.04618>
 - Published: October 6, 2025
 - Key Topics: ACE Framework, performance data (+10.6% improvement), context collapse prevention
 
 ### 8.2 Engineering Blogs and Resources
 
-**Anthropic Engineering Blog - Effective Context Engineering for AI Agents**
-- URL: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+#### Anthropic Engineering Blog - Effective Context Engineering for AI Agents
+
+- URL: <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
 - Published: September 29, 2025
 - Key Topics: Production patterns, Claude Code examples, long-horizon techniques, context rot
 
-**GitHub Copilot Documentation**
-- URL: https://docs.github.com/en/copilot
+#### GitHub Copilot Documentation
+
+- URL: <https://docs.github.com/en/copilot>
 - Key Topics: Instruction files, workspace context, tool usage patterns
 
 ### 8.3 Curated Repositories
 
 **Meirtz/Awesome-Context-Engineering** (2,833 stars)
-- URL: https://github.com/Meirtz/Awesome-Context-Engineering
+
+- URL: <https://github.com/Meirtz/Awesome-Context-Engineering>
 - Coverage: 1,400+ research papers, formal definitions, comprehensive taxonomy
-- Survey Paper: https://arxiv.org/abs/2507.13334
+- Survey Paper: <https://arxiv.org/abs/2507.13334>
 
 **jihoo-kim/awesome-context-engineering** (103 stars)
-- URL: https://github.com/jihoo-kim/awesome-context-engineering
+
+- URL: <https://github.com/jihoo-kim/awesome-context-engineering>
 - Coverage: Four-category framework (Write, Select, Compress, Isolate), practical tools
 
 **yzfly/awesome-context-engineering** (89 stars)
-- URL: https://github.com/yzfly/awesome-context-engineering
+
+- URL: <https://github.com/yzfly/awesome-context-engineering>
 - Coverage: Case studies, failure modes, implementation patterns, translated resources
 
 ### 8.4 Tools and Frameworks
 
 **Memory Systems:**
+
 - mem0, letta (formerly MemGPT), graphiti, cognee, Memary, memobase, A-mem, MemoryOS
 
 **MCP Servers:**
+
 - fastmcp, fastapi_mcp, mcp-agent, mcp-use, modelcontextprotocol/servers, golf, enrichmcp
 
 **Compression:**
+
 - LLMLingua, sammo, Selective_Context, 500xCompressor, xRAG, recomp, CompAct, QGC
 
 **Multi-Agent:**
+
 - MetaGPT, agno, camel, agent-squad, PraisonAI, langroid, LazyLLM, AutoGen, ChatDev
 
 ### 8.5 This Repository
 
-- **URL**: https://github.com/brooke-hamilton/cp-context-engineering
+- **URL**: <https://github.com/brooke-hamilton/cp-context-engineering>
 - **Purpose**: Meta-example of context engineering principles applied to documentation development
 - **Explore**: `.specify/` directory structure, `constitution.md`, this guide's own `specs/1-context-engineering-guide/`
 - **Contributing**: Issues and pull requests welcome for improvements or additional patterns
@@ -1367,7 +1432,7 @@ Reusable, shareable context packages:
 #### Pattern Quick Reference
 
 | Pattern | One-Line Summary | Section |
-|---------|------------------|---------|
+| ------- | ---------------- | ------- |
 | **ACE Framework** | Generation → Reflection → Curation to prevent information loss | §4.1 |
 | **Compaction** | Preserve decisions/state, discard redundant outputs | §4.2 |
 | **Progressive Disclosure** | Load structure first, details just-in-time | §4.3 |
@@ -1378,7 +1443,7 @@ Reusable, shareable context packages:
 #### Failure Mode Checklist
 
 | Failure Mode | Symptoms | Quick Fix |
-|--------------|----------|-----------|
+| ------------ | -------- | --------- |
 | **Context Poisoning** | Incorrect outputs, harmful suggestions | Implement validation gates (constitution) |
 | **Context Rot** | Missing information, incomplete answers | Use compaction; aim for <80% context usage |
 | **Context Distraction** | Off-topic responses, slow processing | Remove irrelevant files; use progressive disclosure |
@@ -1388,12 +1453,14 @@ Reusable, shareable context packages:
 #### Tool Mapping Cheatsheet
 
 **Spec Kit:**
+
 - Progressive Disclosure → Phase 0/1/2 workflow
 - Validation Gates → Constitution checks in plan.md
 - Structured Memory → specs/[feature]/ directories
 - Templates → .specify/templates/*.md
 
 **GitHub Copilot:**
+
 - Persistent Context → .github/prompts/*.instructions.md
 - Progressive Loading → file_search → grep_search → read_file
 - Dynamic Context → Tool calls (semantic_search, read_file)
@@ -1406,6 +1473,7 @@ Reusable, shareable context packages:
 #### For Developers
 
 **Beginner Projects:**
+
 1. **Add Instruction Files**: Create `.github/prompts/[language].instructions.md` for your primary language with 5 rules and 2 examples
 2. **Implement NOTES.md**: Add persistent notes to your project tracking decisions and discoveries
 3. **Progressive README**: Structure your README with quick-start → details → advanced sections
@@ -1423,18 +1491,21 @@ Reusable, shareable context packages:
 #### For Researchers
 
 **Open Questions:**
+
 - **Optimal Compression Ratios**: What's the sweet spot between token savings and information loss for different task types?
 - **Attention Decay Functions**: Can we model exactly how recall degrades with context position and length?
 - **Context Transfer Learning**: Can agents learn to curate better contexts from experience?
 - **Multi-Modal Context Integration**: How do we effectively combine text, code, images, and audio in unified context?
 
 **Research Opportunities:**
+
 - Benchmark context engineering patterns across different model families (Claude, GPT, Gemini, open-source)
 - Study context coordination overhead in multi-agent systems at scale
 - Develop formal metrics for context quality beyond task success rate
 - Investigate privacy-preserving context sharing techniques
 
 **Suggested Reading:**
+
 - Papers in awesome-context-engineering repositories (1,400+ papers)
 - Latest arXiv submissions in cs.AI, cs.CL with "context" keywords
 - Engineering blogs from Anthropic, OpenAI, Microsoft Research
@@ -1444,27 +1515,31 @@ Reusable, shareable context packages:
 **Context Engineering Features to Add:**
 
 **High Impact:**
+
 - **Context Budget Indicators**: Show users how much of their context window is used and by what
 - **Auto-Compaction Triggers**: Detect when context >80% and suggest or auto-compact
 - **Context History Visualization**: Timeline showing what was added/removed from context
 - **Template Libraries**: Pre-built context structures for common domains (web dev, data science, etc.)
 
 **Medium Impact:**
+
 - **Context Diffs**: Show users what changed in context between interactions
 - **Attention Heatmaps**: Visualize which parts of context the model attended to most
 - **Context Recommendations**: Suggest additional files/docs to load based on current task
 - **Failure Mode Detection**: Alert users when context shows signs of rot, distraction, or confusion
 
 **Experimental:**
+
 - **Context Markets**: Platform for sharing/discovering reusable context packages
 - **AI-Assisted Context Curation**: Agent that maintains optimal context automatically
 - **Cross-Tool Context Sync**: Share context between VS Code, Claude, and other tools seamlessly
 - **Context Replay**: Record and replay context evolution for debugging agent behavior
 
 **Implementation Guidance:**
+
 - Study Model Context Protocol (MCP) for standardized interfaces
 - Reference Spec Kit and GitHub Copilot as production examples
 - Measure impact: task success rate, token efficiency, user satisfaction
 - Start simple: context indicators before building complex auto-curation
 
-**End of Document**
+End of Document
