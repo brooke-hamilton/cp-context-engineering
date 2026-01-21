@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radius Context Engineering - Spec Kit & GitHub Copilot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eaeaea;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slide Types */
+        .slide.title-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide.section-slide {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide.content-slide {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .slide.diagram-slide {
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .slide.quote-slide {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #667eea;
+        }
+
+        .section-slide h2 {
+            color: white;
+            font-size: 3rem;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #38ef7d;
+        }
+
+        p {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1.6rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .meta {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            margin-top: 40px;
+        }
+
+        /* Lists */
+        ul, ol {
+            font-size: 1.4rem;
+            line-height: 2;
+            margin-left: 40px;
+        }
+
+        li {
+            margin-bottom: 15px;
+        }
+
+        li::marker {
+            color: #667eea;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 30px;
+        }
+
+        .column {
+            padding: 20px;
+        }
+
+        /* Three Column Layout */
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h4 {
+            font-size: 1.3rem;
+            color: #38ef7d;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        /* Quote */
+        blockquote {
+            font-size: 2rem;
+            font-style: italic;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .quote-author {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Code */
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.2rem;
+        }
+
+        pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(102, 126, 234, 0.3);
+            font-weight: 600;
+            color: #38ef7d;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Diagram */
+        .diagram {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 900px;
+        }
+
+        .diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            border-left: 5px solid #667eea;
+            padding: 25px 30px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+
+        .highlight-box p {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(245, 87, 108, 0.2);
+            border-left: 5px solid #f5576c;
+            padding: 20px 25px;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+        }
+
+        .warning-box p {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Success Box */
+        .success-box {
+            background: rgba(56, 239, 125, 0.15);
+            border-left: 5px solid #38ef7d;
+            padding: 20px 25px;
+            border-radius: 0 10px 10px 0;
+            margin: 15px 0;
+        }
+
+        .success-box p {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Emoji Icons */
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+
+        /* Pattern Grid */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .pattern-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .pattern-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pattern-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .pattern-card h4 {
+            font-size: 1.1rem;
+            color: #38ef7d;
+            margin-bottom: 10px;
+        }
+
+        .pattern-card p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        /* Flow Diagram */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            background: rgba(102, 126, 234, 0.3);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .flow-item h4 {
+            color: #38ef7d;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .flow-item p {
+            font-size: 0.9rem;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: #667eea;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 40px 50px;
+            }
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+            p, li { font-size: 1.2rem; }
+        }
+
+        /* Print / Full Screen */
+        @media print {
+            .nav-controls, .progress-bar, .slide-counter, .keyboard-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="slide-container" id="slideContainer">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <h1>Radius Context Engineering</h1>
+            <p class="subtitle">Spec Kit & GitHub Copilot Integration for AI-Driven Development</p>
+            <p class="meta">For Radius Experiment Teams<br>Version 1.0.0 | January 2026</p>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide content-slide">
+            <h2>Overview</h2>
+            <p>Upcoming Radius experiments will rely heavily on <strong>GitHub Copilot</strong> to generate code based on specifications using <strong>Spec Kit</strong>.</p>
+            <div class="highlight-box">
+                <p>🎯 Context engineering applied to the experiments involves three main components working together to maximize AI effectiveness.</p>
+            </div>
+            <h3>The Three Components</h3>
+            <ul>
+                <li><strong>Spec Kit Constitution</strong> — Overall scope and technology selection</li>
+                <li><strong>GitHub Copilot Configuration</strong> — Instructions, agents, and skills</li>
+                <li><strong>Human Interactions</strong> — How we work with Copilot effectively</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Section - Three Components -->
+        <div class="slide section-slide">
+            <div class="icon">🏗️</div>
+            <h2>Three Core Components</h2>
+            <p class="subtitle">Constitution → Configuration → Interaction</p>
+        </div>
+
+        <!-- Slide 4: Spec Kit Constitution -->
+        <div class="slide content-slide">
+            <h2>1. Spec Kit Constitution</h2>
+            <p>The constitution determines the <strong>overall scope</strong> of the repository, plus <strong>technology selection</strong>.</p>
+            <div class="two-column">
+                <div class="column">
+                    <div class="card">
+                        <h4>📋 What It Defines</h4>
+                        <ul style="margin-left: 20px; font-size: 1.1rem;">
+                            <li>Project scope and boundaries</li>
+                            <li>Technology stack choices</li>
+                            <li>Architectural patterns</li>
+                            <li>Quality standards</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card">
+                        <h4>🎯 Purpose</h4>
+                        <p>Provides the foundational context that shapes all subsequent AI interactions and code generation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <p>💡 The constitution is the "north star" that keeps AI-generated code aligned with project goals.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: GitHub Copilot Configuration -->
+        <div class="slide content-slide">
+            <h2>2. GitHub Copilot Configuration</h2>
+            <p>Defines <strong>how Copilot will use the technology</strong> defined in the constitution.</p>
+            <div class="card">
+                <h4>📝 Example Scenario</h4>
+                <p>If the Spec Kit constitution defines a web application using <strong>React and Node.js</strong>, the GitHub Copilot configuration would include:</p>
+            </div>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <div class="icon">📜</div>
+                    <h4>Instructions</h4>
+                    <p>Rules for generating code snippets</p>
+                </div>
+                <div class="pattern-card">
+                    <div class="icon">🤖</div>
+                    <h4>Agents</h4>
+                    <p>Handlers for specific tasks (e.g., form validation, API calls)</p>
+                </div>
+                <div class="pattern-card">
+                    <div class="icon">⚡</div>
+                    <h4>Skills</h4>
+                    <p>Related to React components and Node.js backend logic</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Configuration Levels -->
+        <div class="slide content-slide">
+            <h2>Configuration Levels</h2>
+            <p>Copilot configuration exists at <strong>multiple levels</strong> to enable reuse and specificity.</p>
+            <div class="two-column">
+                <div class="column">
+                    <div class="card">
+                        <h4>🏢 Organization Level</h4>
+                        <p>Shared across all repositories in the organization:</p>
+                        <ul style="margin-left: 20px; font-size: 1rem; margin-top: 10px;">
+                            <li>Git operations standards</li>
+                            <li>Shell scripting standards</li>
+                            <li>Security practices</li>
+                            <li>Code review guidelines</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card">
+                        <h4>📁 Repository Level</h4>
+                        <p>Specific to the application being built:</p>
+                        <ul style="margin-left: 20px; font-size: 1rem; margin-top: 10px;">
+                            <li>Application-specific instructions</li>
+                            <li>Domain terminology</li>
+                            <li>Project conventions</li>
+                            <li>Architecture patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Human Interactions -->
+        <div class="slide content-slide">
+            <h2>3. Human Interactions with Copilot</h2>
+            <p>How do humans interact with Copilot to ensure the generated code meets <strong>specifications and quality standards</strong>?</p>
+            <h3>Key Questions</h3>
+            <ul>
+                <li><strong>Generation:</strong> How to generate a new constitution? (Prompt to prompt?)</li>
+                <li><strong>Speed:</strong> What are the steps to ensure we get the speed we want out of the experiment?</li>
+                <li><strong>Roles:</strong> Who is involved in each step?</li>
+            </ul>
+            <div class="warning-box">
+                <p>⚠️ Effective human interaction patterns are critical to experiment success — AI tools amplify both good and bad practices.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Section - Proposed Solution -->
+        <div class="slide section-slide">
+            <div class="icon">🚀</div>
+            <h2>Proposed Solution</h2>
+            <p class="subtitle">A centralized Context Engineering Repository</p>
+        </div>
+
+        <!-- Slide 9: Context Engineering Repo -->
+        <div class="slide content-slide">
+            <h2>Context Engineering Repository</h2>
+            <p>We propose creating a <strong>dedicated repository</strong> that contains all shared context engineering resources.</p>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <div class="icon">🏁</div>
+                    <h4>Bootstrap Instructions</h4>
+                    <p>Guidelines for initializing new repos with proper context</p>
+                </div>
+                <div class="pattern-card">
+                    <div class="icon">📚</div>
+                    <h4>Shared Configurations</h4>
+                    <p>Prompts, instructions, agents, and skills common to all repos</p>
+                </div>
+                <div class="pattern-card">
+                    <div class="icon">📖</div>
+                    <h4>Process Documentation</h4>
+                    <p>Human processes to interact with Copilot effectively</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Repository Contents -->
+        <div class="slide content-slide">
+            <h2>Repository Contents</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Example Files</th>
+                </tr>
+                <tr>
+                    <td><strong>Bootstrap Scripts</strong></td>
+                    <td>Automated setup for new repositories</td>
+                    <td><code>scripts/bootstrap.sh</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Instruction Templates</strong></td>
+                    <td>Reusable instruction files by language/framework</td>
+                    <td><code>prompts/typescript.instructions.md</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Agent Definitions</strong></td>
+                    <td>Specialized agent configurations</td>
+                    <td><code>agents/code-review.agent.md</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Skills Library</strong></td>
+                    <td>Common skills for code generation</td>
+                    <td><code>skills/api-design.skill.md</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Process Guides</strong></td>
+                    <td>Documentation on human workflows</td>
+                    <td><code>docs/spec-review-process.md</code></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 11: Section - Current Problems -->
+        <div class="slide section-slide">
+            <div class="icon">⚠️</div>
+            <h2>Current Problems</h2>
+            <p class="subtitle">Challenges we need to address</p>
+        </div>
+
+        <!-- Slide 12: Problem - Spec Review -->
+        <div class="slide content-slide">
+            <h2>Problem: Effective Spec Review</h2>
+            <p>How do we effectively review specifications generated with AI assistance?</p>
+            <div class="two-column">
+                <div class="column">
+                    <div class="card">
+                        <h4>🔍 Current Challenges</h4>
+                        <ul style="margin-left: 20px; font-size: 1rem;">
+                            <li>AI-generated specs may miss edge cases</li>
+                            <li>Consistency across specs varies</li>
+                            <li>Review fatigue with large volumes</li>
+                            <li>Missing domain expertise context</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card">
+                        <h4>🎯 Desired State</h4>
+                        <ul style="margin-left: 20px; font-size: 1rem;">
+                            <li>Structured review checklists</li>
+                            <li>AI-assisted review workflows</li>
+                            <li>Consistent quality gates</li>
+                            <li>Knowledge capture from reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Problem - Config Reuse -->
+        <div class="slide content-slide">
+            <h2>Problem: Config Reuse Across Repos</h2>
+            <p>How do we reuse Copilot configuration effectively across multiple repositories?</p>
+            <div class="warning-box">
+                <p>⚠️ Currently, each repository may have duplicated or inconsistent configurations, leading to different AI behaviors across projects.</p>
+            </div>
+            <h3>Key Challenges</h3>
+            <ul>
+                <li><strong>Duplication:</strong> Same instructions copied across repos</li>
+                <li><strong>Drift:</strong> Configurations evolve independently and diverge</li>
+                <li><strong>Updates:</strong> Improvements in one repo don't propagate</li>
+                <li><strong>Onboarding:</strong> New repos start from scratch</li>
+            </ul>
+        </div>
+
+        <!-- Slide 14: Section - Workflow -->
+        <div class="slide section-slide">
+            <div class="icon">🔄</div>
+            <h2>Proposed Workflow</h2>
+            <p class="subtitle">From Constitution to Code</p>
+        </div>
+
+        <!-- Slide 15: End-to-End Workflow -->
+        <div class="slide content-slide">
+            <h2>End-to-End Workflow</h2>
+            <div class="flow-container">
+                <div class="flow-item">
+                    <h4>1. Constitution</h4>
+                    <p>Define scope & tech</p>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">
+                    <h4>2. Bootstrap</h4>
+                    <p>Init from template</p>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">
+                    <h4>3. Configure</h4>
+                    <p>Apply Copilot rules</p>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">
+                    <h4>4. Generate</h4>
+                    <p>Create specs & code</p>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">
+                    <h4>5. Review</h4>
+                    <p>Human validation</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <p>💡 Each step builds on the previous, with context flowing through the entire pipeline.</p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Roles and Responsibilities -->
+        <div class="slide content-slide">
+            <h2>Roles and Responsibilities</h2>
+            <table>
+                <tr>
+                    <th>Role</th>
+                    <th>Responsibilities</th>
+                    <th>Key Interactions</th>
+                </tr>
+                <tr>
+                    <td><strong>Architect</strong></td>
+                    <td>Defines constitution, reviews major decisions</td>
+                    <td>Constitution creation, tech selection</td>
+                </tr>
+                <tr>
+                    <td><strong>Developer</strong></td>
+                    <td>Generates code with Copilot, refines prompts</td>
+                    <td>Daily coding, prompt iteration</td>
+                </tr>
+                <tr>
+                    <td><strong>Reviewer</strong></td>
+                    <td>Validates specs and code quality</td>
+                    <td>Spec review, code review</td>
+                </tr>
+                <tr>
+                    <td><strong>Platform Team</strong></td>
+                    <td>Maintains shared configs, bootstrap tools</td>
+                    <td>Context engineering repo</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Slide 17: Section - Implementation -->
+        <div class="slide section-slide">
+            <div class="icon">🛠️</div>
+            <h2>Implementation</h2>
+            <p class="subtitle">Practical steps to get started</p>
+        </div>
+
+        <!-- Slide 18: Folder Structure -->
+        <div class="slide content-slide">
+            <h2>Recommended Folder Structure</h2>
+            <pre><code>context-engineering/
+├── .github/
+│   └── prompts/
+│       ├── bash.instructions.md       # Shell scripting standards
+│       ├── typescript.instructions.md # TypeScript conventions
+│       └── react.instructions.md      # React component patterns
+├── agents/
+│   ├── code-review.agent.md           # Code review agent
+│   ├── spec-generator.agent.md        # Spec generation agent
+│   └── test-writer.agent.md           # Test writing agent
+├── skills/
+│   ├── api-design.skill.md            # REST/GraphQL patterns
+│   └── error-handling.skill.md        # Error handling patterns
+├── templates/
+│   ├── constitution.template.md       # Base constitution template
+│   └── spec.template.md               # Spec file template
+├── scripts/
+│   └── bootstrap.sh                   # Repository bootstrap script
+└── docs/
+    ├── getting-started.md             # Onboarding guide
+    └── best-practices.md              # Context engineering practices</code></pre>
+        </div>
+
+        <!-- Slide 19: Bootstrap Process -->
+        <div class="slide content-slide">
+            <h2>Bootstrap Process</h2>
+            <h3>Steps to Initialize a New Repository</h3>
+            <ol>
+                <li><strong>Clone the context engineering repo</strong> or use as template</li>
+                <li><strong>Run bootstrap script</strong> with project parameters</li>
+                <li><strong>Customize the constitution</strong> for your specific project</li>
+                <li><strong>Select applicable instruction files</strong> based on tech stack</li>
+                <li><strong>Configure agents and skills</strong> for your use cases</li>
+            </ol>
+            <pre><code># Example bootstrap command
+./scripts/bootstrap.sh \
+  --name "my-new-project" \
+  --tech "typescript,react,node" \
+  --template "web-app"</code></pre>
+        </div>
+
+        <!-- Slide 20: Instruction File Example -->
+        <div class="slide content-slide">
+            <h2>Instruction File Example</h2>
+            <p>Organization-level instruction file for shell scripting:</p>
+            <pre><code>&lt;instructions&gt;
+You are writing shell scripts for the Radius platform.
+
+&lt;rules&gt;
+- Use bash with strict mode: set -euo pipefail
+- Always quote variables: "${variable}"
+- Check command existence before use
+- Include meaningful error messages
+- Use functions for reusable logic
+&lt;/rules&gt;
+
+&lt;conventions&gt;
+- Script naming: lowercase-with-hyphens.sh
+- Environment variables: UPPERCASE_WITH_UNDERSCORES
+- Exit codes: 0 for success, 1 for general errors
+&lt;/conventions&gt;
+&lt;/instructions&gt;</code></pre>
+        </div>
+
+        <!-- Slide 21: Key Takeaways -->
+        <div class="slide content-slide">
+            <h2>Key Takeaways</h2>
+            <div class="highlight-box">
+                <p>🎯 Context engineering for Radius experiments requires a <strong>systematic approach</strong> with three integrated components.</p>
+            </div>
+            <ul>
+                <li><strong>Constitution First</strong> — Define scope and technology before generating code</li>
+                <li><strong>Configuration Layers</strong> — Use org-level and repo-level configurations</li>
+                <li><strong>Human-in-the-Loop</strong> — Define clear processes for human interaction</li>
+                <li><strong>Centralized Repo</strong> — Create a shared context engineering repository</li>
+                <li><strong>Solve Problems</strong> — Address spec review and config reuse challenges</li>
+                <li><strong>Iterate</strong> — Continuously improve configurations based on learnings</li>
+            </ul>
+        </div>
+
+        <!-- Slide 22: Next Steps -->
+        <div class="slide content-slide">
+            <h2>Next Steps</h2>
+            <h3>Immediate Actions</h3>
+            <ol>
+                <li><strong>Create the context engineering repo</strong> with initial structure</li>
+                <li><strong>Document existing patterns</strong> from current Radius experiments</li>
+                <li><strong>Develop bootstrap scripts</strong> for common project types</li>
+                <li><strong>Pilot with one team</strong> and gather feedback</li>
+                <li><strong>Iterate and expand</strong> based on learnings</li>
+            </ol>
+            <div class="success-box">
+                <p>✅ Start small, prove value, then scale. Each experiment teaches us how to improve our context engineering practices.</p>
+            </div>
+        </div>
+
+        <!-- Slide 23: Thank You -->
+        <div class="slide title-slide">
+            <h1>Thank You!</h1>
+            <p class="subtitle">Radius Context Engineering</p>
+            <p class="meta">
+                Questions? Let's discuss how to implement context engineering<br>
+                for your Radius experiments.<br><br>
+                "Context engineering is about what information the AI has access to, not just what you ask it."
+            </p>
+        </div>
+
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">1 / 23</div>
+    <div class="keyboard-hint">Use ← → arrow keys or click to navigate</div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(index) {
+            // Wrap around
+            if (index < 0) index = 0;
+            if (index >= totalSlides) index = totalSlides - 1;
+            
+            currentSlide = index;
+            
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            // Show current slide
+            slides[currentSlide].classList.add('active');
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+            
+            // Update counter
+            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Update button states
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+                e.preventDefault();
+                changeSlide(-1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        });
+
+        // Click navigation (click on sides)
+        document.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const width = window.innerWidth;
+            
+            // Don't navigate if clicking on buttons
+            if (e.target.closest('.nav-controls')) return;
+            
+            if (x < width * 0.3) {
+                changeSlide(-1);
+            } else if (x > width * 0.7) {
+                changeSlide(1);
+            }
+        });
+
+        // Touch navigation
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    changeSlide(1); // Swipe left = next
+                } else {
+                    changeSlide(-1); // Swipe right = prev
+                }
+            }
+        }
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
