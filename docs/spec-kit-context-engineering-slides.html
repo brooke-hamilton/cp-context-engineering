@@ -480,14 +480,67 @@
             </ul>
         </div>
 
-        <!-- Slide 3: Section - Three Components -->
+        <!-- Slide 3: Section - Current Problems -->
+        <div class="slide section-slide">
+            <div class="icon">⚠️</div>
+            <h2>Current Problems</h2>
+            <p class="subtitle">Challenges we need to address</p>
+        </div>
+
+        <!-- Slide 4: Problem - Spec Review -->
+        <div class="slide content-slide">
+            <h2>Problem: Effective Spec Review</h2>
+            <p>How do we effectively review specifications generated with AI assistance?</p>
+            <div class="two-column">
+                <div class="column">
+                    <div class="card">
+                        <h4>🔍 Current Challenges</h4>
+                        <ul style="margin-left: 20px; font-size: 1rem;">
+                            <li>AI-generated specs may miss edge cases</li>
+                            <li>Consistency across specs varies</li>
+                            <li>Review fatigue with large volumes</li>
+                            <li>Missing domain expertise context</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card">
+                        <h4>🎯 Desired State</h4>
+                        <ul style="margin-left: 20px; font-size: 1rem;">
+                            <li>Structured review checklists</li>
+                            <li>AI-assisted review workflows</li>
+                            <li>Consistent quality gates</li>
+                            <li>Knowledge capture from reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Problem - Config Reuse -->
+        <div class="slide content-slide">
+            <h2>Problem: Config Reuse Across Repos</h2>
+            <p>How do we reuse Copilot configuration effectively across multiple repositories?</p>
+            <div class="warning-box">
+                <p>⚠️ Currently, each repository may have duplicated or inconsistent configurations, leading to different AI behaviors across projects.</p>
+            </div>
+            <h3>Key Challenges</h3>
+            <ul>
+                <li><strong>Duplication:</strong> Same instructions copied across repos</li>
+                <li><strong>Drift:</strong> Configurations evolve independently and diverge</li>
+                <li><strong>Updates:</strong> Improvements in one repo don't propagate</li>
+                <li><strong>Onboarding:</strong> New repos start from scratch</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6: Section - Three Components -->
         <div class="slide section-slide">
             <div class="icon">🏗️</div>
             <h2>Three Core Components</h2>
             <p class="subtitle">Constitution → Configuration → Interaction</p>
         </div>
 
-        <!-- Slide 4: Spec Kit Constitution -->
+        <!-- Slide 7: Spec Kit Constitution -->
         <div class="slide content-slide">
             <h2>1. Spec Kit Constitution</h2>
             <p>The constitution determines the <strong>overall scope</strong> of the repository, plus <strong>technology selection</strong>.</p>
@@ -515,7 +568,7 @@
             </div>
         </div>
 
-        <!-- Slide 5: GitHub Copilot Configuration -->
+        <!-- Slide 8: GitHub Copilot Configuration -->
         <div class="slide content-slide">
             <h2>2. GitHub Copilot Configuration</h2>
             <p>Defines <strong>how Copilot will use the technology</strong> defined in the constitution.</p>
@@ -542,7 +595,7 @@
             </div>
         </div>
 
-        <!-- Slide 6: Configuration Levels -->
+        <!-- Slide 9: Configuration Levels -->
         <div class="slide content-slide">
             <h2>Configuration Levels</h2>
             <p>Copilot configuration exists at <strong>multiple levels</strong> to enable reuse and specificity.</p>
@@ -574,7 +627,7 @@
             </div>
         </div>
 
-        <!-- Slide 7: Human Interactions -->
+        <!-- Slide 10: Human Interactions -->
         <div class="slide content-slide">
             <h2>3. Human Interactions with Copilot</h2>
             <p>How do humans interact with Copilot to ensure the generated code meets <strong>specifications and quality standards</strong>?</p>
@@ -589,14 +642,14 @@
             </div>
         </div>
 
-        <!-- Slide 8: Section - Proposed Solution -->
+        <!-- Slide 11: Section - Proposed Solution -->
         <div class="slide section-slide">
             <div class="icon">🚀</div>
             <h2>Proposed Solution</h2>
             <p class="subtitle">A centralized Context Engineering Repository</p>
         </div>
 
-        <!-- Slide 9: Context Engineering Repo -->
+        <!-- Slide 12: Context Engineering Repo -->
         <div class="slide content-slide">
             <h2>Context Engineering Repository</h2>
             <p>We propose creating a <strong>dedicated repository</strong> that contains all shared context engineering resources.</p>
@@ -619,7 +672,7 @@
             </div>
         </div>
 
-        <!-- Slide 10: Repository Contents -->
+        <!-- Slide 13: Repository Contents -->
         <div class="slide content-slide">
             <h2>Repository Contents</h2>
             <table>
@@ -654,59 +707,6 @@
                     <td><code>docs/spec-review-process.md</code></td>
                 </tr>
             </table>
-        </div>
-
-        <!-- Slide 11: Section - Current Problems -->
-        <div class="slide section-slide">
-            <div class="icon">⚠️</div>
-            <h2>Current Problems</h2>
-            <p class="subtitle">Challenges we need to address</p>
-        </div>
-
-        <!-- Slide 12: Problem - Spec Review -->
-        <div class="slide content-slide">
-            <h2>Problem: Effective Spec Review</h2>
-            <p>How do we effectively review specifications generated with AI assistance?</p>
-            <div class="two-column">
-                <div class="column">
-                    <div class="card">
-                        <h4>🔍 Current Challenges</h4>
-                        <ul style="margin-left: 20px; font-size: 1rem;">
-                            <li>AI-generated specs may miss edge cases</li>
-                            <li>Consistency across specs varies</li>
-                            <li>Review fatigue with large volumes</li>
-                            <li>Missing domain expertise context</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="card">
-                        <h4>🎯 Desired State</h4>
-                        <ul style="margin-left: 20px; font-size: 1rem;">
-                            <li>Structured review checklists</li>
-                            <li>AI-assisted review workflows</li>
-                            <li>Consistent quality gates</li>
-                            <li>Knowledge capture from reviews</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 13: Problem - Config Reuse -->
-        <div class="slide content-slide">
-            <h2>Problem: Config Reuse Across Repos</h2>
-            <p>How do we reuse Copilot configuration effectively across multiple repositories?</p>
-            <div class="warning-box">
-                <p>⚠️ Currently, each repository may have duplicated or inconsistent configurations, leading to different AI behaviors across projects.</p>
-            </div>
-            <h3>Key Challenges</h3>
-            <ul>
-                <li><strong>Duplication:</strong> Same instructions copied across repos</li>
-                <li><strong>Drift:</strong> Configurations evolve independently and diverge</li>
-                <li><strong>Updates:</strong> Improvements in one repo don't propagate</li>
-                <li><strong>Onboarding:</strong> New repos start from scratch</li>
-            </ul>
         </div>
 
         <!-- Slide 14: Section - Workflow -->
