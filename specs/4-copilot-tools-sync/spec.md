@@ -59,6 +59,7 @@ A user wants to sync Copilot tools from a different GitHub repository than the d
 - What happens when the user-level profile directories for agents, instructions, or prompts do not yet exist? The extension creates the necessary directories before copying files.
 - What happens when a file in the repository is deleted between syncs? The extension only copies files that exist in the repository; it does not delete local files that are no longer present in the source. (Sync is additive/overwrite only, not a mirror.)
 - What happens when the user runs the command while a sync is already in progress? The extension prevents concurrent sync operations and notifies the user that a sync is already running.
+- What happens when one of the three source directories (agents, instructions, or prompts) does not exist in the configured repository? The extension treats a missing directory as containing zero matching files and continues syncing the remaining directories. This is not an error.
 
 ## Requirements *(mandatory)*
 
