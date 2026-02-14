@@ -19,7 +19,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Global variables
 # ---------------------------------------------------------------------------
-readonly COPILOT_MODEL="claude-sonnet-4.5"
+readonly COPILOT_MODEL="gpt-5.3-codex"
 
 CURRENT_BRANCH=""
 DEFAULT_BRANCH=""
