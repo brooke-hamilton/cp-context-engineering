@@ -368,6 +368,8 @@ RULES FOR THE DESCRIPTION:"
 - Fill in sections based on the diff and commit context
 
 IMPORTANT: Do not end your response with any commentary or notes, like 'Done'. Only output the filled-in PR description based on the template.
+The output of this prompt is going directly into a PR description, so if you add commentary or notes, that will end up in the pr description 
+and you will be embarassed, so don't do it. Just fill in the template based on the context and do not add any commentary.
 
 PR TEMPLATE:
 ${PR_TEMPLATE}"
@@ -398,6 +400,10 @@ ${FULL_DIFF}"
 
     PR_TITLE=$(printf '%s\n' "${copilot_output}" | head -1)
     PR_DESCRIPTION=$(printf '%s\n' "${copilot_output}" | tail -n +3)
+
+    # Strip trailing commentary line the model often appends
+    PR_DESCRIPTION=$(printf '%s\n' "${PR_DESCRIPTION}" \
+        | sed '$ d')
 
     if [[ -z "${PR_TITLE}" ]]; then
         echo "ERROR: Copilot CLI returned an empty title." >&2
