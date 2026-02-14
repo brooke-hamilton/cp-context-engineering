@@ -367,6 +367,8 @@ RULES FOR THE DESCRIPTION:"
 - Preserve all checkboxes as checkboxes (do NOT convert to bullets)
 - Fill in sections based on the diff and commit context
 
+IMPORTANT: Do not end your response with any commentary or notes, like 'Done'. Only output the filled-in PR description based on the template.
+
 PR TEMPLATE:
 ${PR_TEMPLATE}"
     else

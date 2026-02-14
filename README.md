@@ -1,8 +1,8 @@
 # Context Engineering for GitHub Copilot
 
-Tools for making tools and bootstrapping assets: this is a personal collection of the custom instructions, agents, prompts, and scripts I use to configure GitHub Copilot for my projects. The meta-tooling and bootstrapping tools for Copilot customization is still maturing across the industry, so this repo fills gaps that will likely be covered by better tooling before long.
+This repo contains bootstrapping assets and tools for making tools. This is a personal collection of the custom instructions, agents, prompts, and scripts I use to configure GitHub Copilot for my projects. The meta-tooling and bootstrapping tools for Copilot customization is still maturing across the industry, so this repo fills gaps that will soon be covered by better tooling.
 
-There is no attempt to make the assets in this repo generally useful; they are things I use for configuring repos that use Copilot. I use this repo to share links to examples with teammates, and to serve as a starting place for bootstrapping Copilot in my work repos. Sometimes I put things here that I developed in another repo and I want to reuse in other repos.
+There is no attempt to make the assets in this repo generally useful; they are things I use for configuring repos that use Copilot. I use this repo to share links to these assets as examples in disucssions with teammates, and to serve as a starting place for bootstrapping Copilot in my work repos. Sometimes I put things here that I developed in another repo and I want to reuse in other repos.
 
 I use [Spec Kit](https://github.com/github/spec-kit) for some of the work in this repo, so you will see those prompts and agents mixed with the Copilot meta-tooling.
 
