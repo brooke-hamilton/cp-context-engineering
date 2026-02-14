@@ -22,6 +22,19 @@ Instructions for writing clean, safe, and maintainable shell scripts for bash, s
 - Prefer safe expansions: double-quote variable references (`"$var"`), use `${var}` for clarity, and avoid `eval`
 - Use modern Bash features (`[[ ]]`, `local`, arrays) when portability requirements allow; fall back to POSIX constructs only when needed
 - Choose reliable parsers for structured data instead of ad-hoc text processing
+- When a command supports both long-form and short-form flags, always use the long form for readability (e.g., `--silent` instead of `-s`, `--output` instead of `-o`)
+
+### Long-Form Flag Example
+
+```bash
+# Bad – short flags are harder to read without memorizing each tool's options
+curl -s -o /dev/null -w "%{http_code}" "${URL}"
+git log -n 5 --oneline
+
+# Good – long flags are self-documenting
+curl --silent --output /dev/null --write-out "%{http_code}" "${URL}"
+git log --max-count=5 --oneline
+```
 
 ## Error Handling & Safety
 

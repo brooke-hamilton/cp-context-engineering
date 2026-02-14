@@ -7,8 +7,11 @@
 # using the Copilot CLI. Auto-detects fork configuration, validates
 # pre-conditions, and creates the PR via the GitHub CLI.
 #
-# Usage: ./create-pr.sh
-# No arguments. No flags. Everything is auto-detected from git state.
+# Usage: ./create-pr.sh [--dry-run]
+#
+# Options:
+#   --dry-run  Do everything except create the PR. Outputs the generated
+#              title and description to the terminal.
 # ============================================================================
 
 set -euo pipefail
@@ -16,6 +19,8 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Global variables
 # ---------------------------------------------------------------------------
+readonly COPILOT_MODEL="gpt-5.3-codex"
+
 CURRENT_BRANCH=""
 DEFAULT_BRANCH=""
 MAIN_REMOTE=""
@@ -36,6 +41,7 @@ PR_DESCRIPTION=""
 PR_URL=""
 
 TEMP_FILES=()
+DRY_RUN=false
 
 # ---------------------------------------------------------------------------
 # Cleanup
@@ -247,7 +253,7 @@ validate_preconditions() {
     local main_url
     main_url=$(git remote get-url "${MAIN_REMOTE}")
     pr_check_repo=$(printf '%s\n' "${main_url}" \
-        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
+        | sed -E 's|\.git$||; s|.*[:/]([^/]+/[^/]+)$|\1|')
     local existing_url
     existing_url=$(
         gh pr list --head "${pr_head}" \
@@ -382,7 +388,8 @@ FULL DIFF:
 ${FULL_DIFF}"
 
     local copilot_output
-    copilot_output=$(printf '%s\n' "${prompt}" | copilot) || {
+    copilot_output=$(printf '%s\n' "${prompt}" \
+        | copilot --silent --model "${COPILOT_MODEL}") || {
         echo "ERROR: Copilot CLI invocation failed." >&2
         exit 1
     }
@@ -419,7 +426,7 @@ create_pr() {
     local main_url
     main_url=$(git remote get-url "${MAIN_REMOTE}")
     MAIN_REPO=$(printf '%s\n' "${main_url}" \
-        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
+        | sed -E 's|\.git$||; s|.*[:/]([^/]+/[^/]+)$|\1|')
 
     local head_ref="${CURRENT_BRANCH}"
     if [[ "${BRANCH_REMOTE}" != "${MAIN_REMOTE}" ]]; then
@@ -456,12 +463,38 @@ main() {
     fetch_default_branch
     gather_diff_context
     generate_pr_content
-    create_pr
 
-    echo "${SEPARATOR}"
-    echo "PR created successfully!"
-    echo "URL: ${PR_URL}"
-    echo "${SEPARATOR}"
+    if [[ "${DRY_RUN}" == true ]]; then
+        echo "${SEPARATOR}"
+        echo "DRY RUN — PR was not created"
+        echo "${SEPARATOR}"
+        echo "Title: ${PR_TITLE}"
+        echo ""
+        echo "Description:"
+        echo "${PR_DESCRIPTION}"
+        echo "${SEPARATOR}"
+    else
+        create_pr
+
+        echo "${SEPARATOR}"
+        echo "PR created successfully!"
+        echo "URL: ${PR_URL}"
+        echo "${SEPARATOR}"
+    fi
 }
 
-main "$@"
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+
+main
