@@ -19,10 +19,8 @@ set -euo pipefail
 CURRENT_BRANCH=""
 DEFAULT_BRANCH=""
 MAIN_REMOTE=""
-FORK_REMOTE=""
-IS_FORK="false"
-FORK_OWNER=""
 MAIN_REPO=""
+BRANCH_REMOTE=""
 
 SEPARATOR=$(printf '=%.0s' {1..76})
 readonly SEPARATOR
@@ -97,7 +95,7 @@ validate_prerequisites() {
 get_remote_owner() {
     local remote_url
     remote_url=$(git remote get-url "$1")
-    echo "${remote_url}" \
+    printf '%s\n' "${remote_url}" \
         | sed -E 's|.*[:/]([^/]+)/[^/]+(.git)?$|\1|'
 }
 
@@ -109,47 +107,13 @@ detect_remote_config() {
 
     if git remote get-url upstream &>/dev/null; then
         MAIN_REMOTE="upstream"
-        FORK_REMOTE="origin"
-        IS_FORK="true"
-        FORK_OWNER=$(get_remote_owner "origin")
-        echo "  Remote setup: clone-from-fork"
+        echo "  Remote setup: upstream remote found"
     else
-        local branch
-        branch=$(git rev-parse --abbrev-ref HEAD)
-        local found_remote=""
-
-        while IFS= read -r remote; do
-            if [[ "${remote}" == "origin" \
-                || "${remote}" == "upstream" ]]; then
-                continue
-            fi
-            if git ls-remote --heads "${remote}" "${branch}" \
-                2>/dev/null | grep -q .; then
-                found_remote="${remote}"
-                break
-            fi
-        done < <(git remote)
-
-        if [[ -n "${found_remote}" ]]; then
-            MAIN_REMOTE="origin"
-            FORK_REMOTE="${found_remote}"
-            IS_FORK="true"
-            FORK_OWNER=$(get_remote_owner "${found_remote}")
-            echo "  Remote setup: clone-from-main-with-fork"
-        else
-            MAIN_REMOTE="origin"
-            FORK_REMOTE=""
-            IS_FORK="false"
-            echo "  Remote setup: non-fork"
-        fi
+        MAIN_REMOTE="origin"
+        echo "  Remote setup: using origin"
     fi
 
     echo "  Main remote: ${MAIN_REMOTE}"
-    if [[ -n "${FORK_REMOTE}" ]]; then
-        echo "  Fork remote: ${FORK_REMOTE}"
-    else
-        echo "  Fork remote: none"
-    fi
 }
 
 # ---------------------------------------------------------------------------
@@ -217,43 +181,77 @@ validate_preconditions() {
     echo "  ✓ ${count} commit(s) ahead of '${DEFAULT_BRANCH}'"
 
     # 4. Branch pushed to at least one remote
-    local pushed="false"
-    local pushed_to=""
-    local remote_sha=""
+    local -a found_remotes=()
+    local -A remote_shas=()
+    local sha=""
     while IFS= read -r remote; do
-        remote_sha=$(
+        sha=$(
             git ls-remote --heads "${remote}" \
                 "${CURRENT_BRANCH}" 2>/dev/null \
             | awk '{print $1}'
         )
-        if [[ -n "${remote_sha}" ]]; then
-            pushed="true"
-            pushed_to="${remote}"
-            break
+        if [[ -n "${sha}" ]]; then
+            found_remotes+=("${remote}")
+            remote_shas["${remote}"]="${sha}"
         fi
     done < <(git remote)
 
-    if [[ "${pushed}" != "true" ]]; then
+    if [[ ${#found_remotes[@]} -eq 0 ]]; then
         echo "ERROR: Branch '${CURRENT_BRANCH}' has not" \
             "been pushed to any remote." \
             "Run 'git push' first." >&2
         exit 1
     fi
 
+    if [[ ${#found_remotes[@]} -eq 1 ]]; then
+        BRANCH_REMOTE="${found_remotes[0]}"
+    else
+        echo "  Branch '${CURRENT_BRANCH}' exists on" \
+            "multiple remotes:"
+        local i
+        for i in "${!found_remotes[@]}"; do
+            echo "    $((i + 1))) ${found_remotes[${i}]}"
+        done
+        local selection
+        while true; do
+            read -rp "  Select remote for the PR [1-${#found_remotes[@]}]: " \
+                selection
+            if [[ "${selection}" =~ ^[0-9]+$ ]] \
+                && (( selection >= 1 )) \
+                && (( selection <= ${#found_remotes[@]} )); then
+                BRANCH_REMOTE="${found_remotes[$((selection - 1))]}"
+                break
+            fi
+            echo "  Invalid selection. Try again."
+        done
+    fi
+
     local local_sha
     local_sha=$(git rev-parse HEAD)
-    if [[ "${local_sha}" != "${remote_sha}" ]]; then
+    if [[ "${local_sha}" != "${remote_shas[${BRANCH_REMOTE}]}" ]]; then
         echo "ERROR: Branch '${CURRENT_BRANCH}' has" \
-            "unpushed commits." \
+            "unpushed commits on '${BRANCH_REMOTE}'." \
             "Run 'git push' first." >&2
         exit 1
     fi
-    echo "  ✓ Branch pushed to '${pushed_to}'"
+    echo "  ✓ Branch pushed to '${BRANCH_REMOTE}'"
 
     # 5. No existing PR
+    local pr_head="${CURRENT_BRANCH}"
+    if [[ "${BRANCH_REMOTE}" != "${MAIN_REMOTE}" ]]; then
+        local branch_owner
+        branch_owner=$(get_remote_owner "${BRANCH_REMOTE}")
+        pr_head="${branch_owner}:${CURRENT_BRANCH}"
+    fi
+    local pr_check_repo=""
+    local main_url
+    main_url=$(git remote get-url "${MAIN_REMOTE}")
+    pr_check_repo=$(printf '%s\n' "${main_url}" \
+        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
     local existing_url
     existing_url=$(
-        gh pr list --head "${CURRENT_BRANCH}" \
+        gh pr list --head "${pr_head}" \
+            --repo "${pr_check_repo}" \
             --json url --jq '.[0].url' 2>/dev/null
     ) || true
     if [[ -n "${existing_url}" ]]; then
@@ -272,10 +270,9 @@ fetch_default_branch() {
         "from '${MAIN_REMOTE}'..."
 
     if ! git fetch "${MAIN_REMOTE}" "${DEFAULT_BRANCH}" \
-        >/dev/null 2>&1; then
+        >/dev/null; then
         echo "ERROR: Failed to fetch '${DEFAULT_BRANCH}'" \
-            "from '${MAIN_REMOTE}'. Check your network" \
-            "connection and remote permissions." >&2
+            "from '${MAIN_REMOTE}'." >&2
         exit 1
     fi
     echo "  ✓ Fetch complete"
@@ -285,6 +282,8 @@ fetch_default_branch() {
 # find_pr_template
 # ---------------------------------------------------------------------------
 find_pr_template() {
+    local repo_root
+    repo_root=$(git rev-parse --show-toplevel)
     local locations=(
         ".github/PULL_REQUEST_TEMPLATE.md"
         ".github/pull_request_template.md"
@@ -292,8 +291,8 @@ find_pr_template() {
         "PULL_REQUEST_TEMPLATE.md"
     )
     for loc in "${locations[@]}"; do
-        if [[ -f "${loc}" ]]; then
-            echo "${loc}"
+        if [[ -f "${repo_root}/${loc}" ]]; then
+            printf '%s\n' "${repo_root}/${loc}"
             return 0
         fi
     done
@@ -383,13 +382,13 @@ FULL DIFF:
 ${FULL_DIFF}"
 
     local copilot_output
-    copilot_output=$(echo "${prompt}" | copilot) || {
+    copilot_output=$(printf '%s\n' "${prompt}" | copilot) || {
         echo "ERROR: Copilot CLI invocation failed." >&2
         exit 1
     }
 
-    PR_TITLE=$(echo "${copilot_output}" | head -1)
-    PR_DESCRIPTION=$(echo "${copilot_output}" | tail -n +3)
+    PR_TITLE=$(printf '%s\n' "${copilot_output}" | head -1)
+    PR_DESCRIPTION=$(printf '%s\n' "${copilot_output}" | tail -n +3)
 
     if [[ -z "${PR_TITLE}" ]]; then
         echo "ERROR: Copilot CLI returned an empty title." >&2
@@ -415,33 +414,29 @@ create_pr() {
     local body_file
     body_file=$(mktemp)
     TEMP_FILES+=("${body_file}")
-    echo "${PR_DESCRIPTION}" > "${body_file}"
+    printf '%s\n' "${PR_DESCRIPTION}" > "${body_file}"
 
-    if [[ "${IS_FORK}" == "true" ]]; then
-        local main_url
-        main_url=$(git remote get-url "${MAIN_REMOTE}")
-        MAIN_REPO=$(echo "${main_url}" \
-            | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
+    local main_url
+    main_url=$(git remote get-url "${MAIN_REMOTE}")
+    MAIN_REPO=$(printf '%s\n' "${main_url}" \
+        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
 
-        PR_URL=$(gh pr create \
-            --base "${DEFAULT_BRANCH}" \
-            --head "${FORK_OWNER}:${CURRENT_BRANCH}" \
-            --repo "${MAIN_REPO}" \
-            --title "${PR_TITLE}" \
-            --body-file "${body_file}") || {
-            echo "ERROR: Failed to create PR." >&2
-            exit 1
-        }
-    else
-        PR_URL=$(gh pr create \
-            --base "${DEFAULT_BRANCH}" \
-            --head "${CURRENT_BRANCH}" \
-            --title "${PR_TITLE}" \
-            --body-file "${body_file}") || {
-            echo "ERROR: Failed to create PR." >&2
-            exit 1
-        }
+    local head_ref="${CURRENT_BRANCH}"
+    if [[ "${BRANCH_REMOTE}" != "${MAIN_REMOTE}" ]]; then
+        local branch_owner
+        branch_owner=$(get_remote_owner "${BRANCH_REMOTE}")
+        head_ref="${branch_owner}:${CURRENT_BRANCH}"
     fi
+
+    PR_URL=$(gh pr create \
+        --base "${DEFAULT_BRANCH}" \
+        --head "${head_ref}" \
+        --repo "${MAIN_REPO}" \
+        --title "${PR_TITLE}" \
+        --body-file "${body_file}") || {
+        echo "ERROR: Failed to create PR." >&2
+        exit 1
+    }
 
     echo "  ✓ PR created"
 }
