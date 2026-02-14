@@ -38,12 +38,12 @@ Verified on current machine (2026-02-14):
 
 **Purpose**: Project initialization and VS Code extension scaffold
 
-- [ ] T001 Create extension directory structure at `extensions/copilot-tools-sync/`
-- [ ] T002 Create `extensions/copilot-tools-sync/package.json` with extension manifest (name `copilot-tools-sync`, displayName `Copilot Tools Sync`, publisher `brooke-hamilton`, version `0.0.1`, engines `{ "vscode": "^1.100.0" }`, main `./out/extension.js`, activationEvents `onCommand:copilotToolsSync.sync`, contributes for command `copilotToolsSync.sync` titled "Sync Copilot Tools", configuration contribution for `copilotToolsSync.repository` with type string and default `brooke-hamilton/cp-context-engineering`, scripts with `compile` as `tsc -p ./`, devDependencies for `@types/vscode`, `typescript`, and `@vscode/vsce`)
-- [ ] T003 [P] Create `extensions/copilot-tools-sync/tsconfig.json` with TypeScript compiler configuration (target ES2022, module commonjs, outDir `./out`, rootDir `./src`, strict true, esModuleInterop true, sourceMap true, exclude `node_modules` and `out`)
-- [ ] T004 [P] Create `extensions/copilot-tools-sync/.vscodeignore` to exclude `src/`, `tsconfig.json`, `node_modules/`, and non-essential files from VSIX package
-- [ ] T005 [P] Create `extensions/copilot-tools-sync/.gitignore` to ignore `out/`, `node_modules/`, and `*.vsix`
-- [ ] T006 Install npm dependencies by running `npm install` in `extensions/copilot-tools-sync/`
+- [x] T001 Create extension directory structure at `extensions/copilot-tools-sync/`
+- [x] T002 Create `extensions/copilot-tools-sync/package.json` with extension manifest (name `copilot-tools-sync`, displayName `Copilot Tools Sync`, publisher `brooke-hamilton`, version `0.0.1`, engines `{ "vscode": "^1.100.0" }`, main `./out/extension.js`, activationEvents `onCommand:copilotToolsSync.sync`, contributes for command `copilotToolsSync.sync` titled "Sync Copilot Tools", configuration contribution for `copilotToolsSync.repository` with type string and default `brooke-hamilton/cp-context-engineering`, scripts with `compile` as `tsc -p ./`, devDependencies for `@types/vscode`, `typescript`, and `@vscode/vsce`)
+- [x] T003 [P] Create `extensions/copilot-tools-sync/tsconfig.json` with TypeScript compiler configuration (target ES2022, module commonjs, outDir `./out`, rootDir `./src`, strict true, esModuleInterop true, sourceMap true, exclude `node_modules` and `out`)
+- [x] T004 [P] Create `extensions/copilot-tools-sync/.vscodeignore` to exclude `src/`, `tsconfig.json`, `node_modules/`, and non-essential files from VSIX package
+- [x] T005 [P] Create `extensions/copilot-tools-sync/.gitignore` to ignore `out/`, `node_modules/`, and `*.vsix`
+- [x] T006 Install npm dependencies by running `npm install` in `extensions/copilot-tools-sync/`
 
 **Checkpoint**: Extension project scaffold is ready with all configuration files and dependencies installed
 
@@ -55,8 +55,8 @@ Verified on current machine (2026-02-14):
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 [P] Implement `extensions/copilot-tools-sync/src/profile-paths.ts` — export `ProfilePaths` interface with `agents`, `instructions`, and `prompts` as `vscode.Uri` properties; export `resolveProfilePaths(context: ExtensionContext): ProfilePaths` function that derives user data directory from `context.globalStorageUri.fsPath` by navigating up 2 levels via `path.resolve(globalStoragePath, '..', '..')`, then returns URIs for `agents/`, `instructions/`, and `prompts/` subdirectories
-- [ ] T008 [P] Implement `extensions/copilot-tools-sync/src/github-api.ts` — export `GitHubFileEntry` interface (`name`, `path`, `type`, `size`, `download_url`); export `listDirectoryFiles(owner, repo, path): Promise<GitHubFileEntry[]>` using Node.js `https` module to GET `https://api.github.com/repos/{owner}/{repo}/contents/{path}` with headers `User-Agent: copilot-tools-sync-vscode` and `Accept: application/vnd.github.v3+json`, parse JSON response, throw descriptive errors for HTTP 403 (rate limit), 404 (not found), 5xx, and network failures; export `downloadFileContent(url): Promise<Uint8Array>` that GETs the URL, follows 301 redirects, and returns body as `Uint8Array`
+- [x] T007 [P] Implement `extensions/copilot-tools-sync/src/profile-paths.ts` — export `ProfilePaths` interface with `agents`, `instructions`, and `prompts` as `vscode.Uri` properties; export `resolveProfilePaths(context: ExtensionContext): ProfilePaths` function that derives user data directory from `context.globalStorageUri.fsPath` by navigating up 2 levels via `path.resolve(globalStoragePath, '..', '..')`, then returns URIs for `agents/`, `instructions/`, and `prompts/` subdirectories
+- [x] T008 [P] Implement `extensions/copilot-tools-sync/src/github-api.ts` — export `GitHubFileEntry` interface (`name`, `path`, `type`, `size`, `download_url`); export `listDirectoryFiles(owner, repo, path): Promise<GitHubFileEntry[]>` using Node.js `https` module to GET `https://api.github.com/repos/{owner}/{repo}/contents/{path}` with headers `User-Agent: copilot-tools-sync-vscode` and `Accept: application/vnd.github.v3+json`, parse JSON response, throw descriptive errors for HTTP 403 (rate limit), 404 (not found), 5xx, and network failures; export `downloadFileContent(url): Promise<Uint8Array>` that GETs the URL, follows 301 redirects, and returns body as `Uint8Array`
 
 **Checkpoint**: Foundation ready — profile path resolution and GitHub API client are independently functional
 
@@ -70,10 +70,10 @@ Verified on current machine (2026-02-14):
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Implement `extensions/copilot-tools-sync/src/sync.ts` — export `syncCopilotTools(context: ExtensionContext): Promise<void>` that: reads `copilotToolsSync.repository` config (default `brooke-hamilton/cp-context-engineering`), parses `owner/repo`, resolves profile paths via `resolveProfilePaths`, iterates over 3 source directory mappings (`.github/agents` → `agents`, `.github/instructions` → `instructions`, `.github/prompts` → `prompts`), calls `listDirectoryFiles` for each, filters entries where `name` starts with `cp.` and `type === "file"`, downloads each via `downloadFileContent`, ensures destination directory exists via `vscode.workspace.fs.createDirectory`, writes via `vscode.workspace.fs.writeFile`, tracks success count, shows `showInformationMessage("Synced {n} Copilot tool files.")` on success
-- [ ] T010 [US1] Implement `extensions/copilot-tools-sync/src/extension.ts` — export `activate(context: ExtensionContext)` that registers `copilotToolsSync.sync` command calling `syncCopilotTools(context)`, pushes disposable to `context.subscriptions`; export no-op `deactivate()`
-- [ ] T011 [US1] Compile the extension (`npm run compile`) and verify output files in `extensions/copilot-tools-sync/out/`
-- [ ] T012 [US1] Package as VSIX (`npx vsce package` in `extensions/copilot-tools-sync/`), install via `code --install-extension`, run "Sync Copilot Tools" from command palette, verify `cp.`-prefixed files appear in user profile directories
+- [x] T009 [US1] Implement `extensions/copilot-tools-sync/src/sync.ts` — export `syncCopilotTools(context: ExtensionContext): Promise<void>` that: reads `copilotToolsSync.repository` config (default `brooke-hamilton/cp-context-engineering`), parses `owner/repo`, resolves profile paths via `resolveProfilePaths`, iterates over 3 source directory mappings (`.github/agents` → `agents`, `.github/instructions` → `instructions`, `.github/prompts` → `prompts`), calls `listDirectoryFiles` for each, filters entries where `name` starts with `cp.` and `type === "file"`, downloads each via `downloadFileContent`, ensures destination directory exists via `vscode.workspace.fs.createDirectory`, writes via `vscode.workspace.fs.writeFile`, tracks success count, shows `showInformationMessage("Synced {n} Copilot tool files.")` on success
+- [x] T010 [US1] Implement `extensions/copilot-tools-sync/src/extension.ts` — export `activate(context: ExtensionContext)` that registers `copilotToolsSync.sync` command calling `syncCopilotTools(context)`, pushes disposable to `context.subscriptions`; export no-op `deactivate()`
+- [x] T011 [US1] Compile the extension (`npm run compile`) and verify output files in `extensions/copilot-tools-sync/out/`
+- [x] T012 [US1] Package as VSIX (`npx vsce package` in `extensions/copilot-tools-sync/`), install via `code --install-extension`, run "Sync Copilot Tools" from command palette, verify `cp.`-prefixed files appear in user profile directories
 
 **Checkpoint**: User Story 1 is fully functional — core sync works end-to-end
 
@@ -87,11 +87,11 @@ Verified on current machine (2026-02-14):
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Add concurrency guard to `syncCopilotTools` in `extensions/copilot-tools-sync/src/sync.ts` — module-level `let isSyncing = false`, check at entry and show `showWarningMessage("A sync is already in progress.")` if true, wrap sync logic in `try/finally` to always clear flag
-- [ ] T014 [US2] Add error handling to `syncCopilotTools` in `extensions/copilot-tools-sync/src/sync.ts` — catch network errors → `showErrorMessage("Sync failed: unable to reach repository...")`, catch 404 → `showErrorMessage("Sync failed: repository not found...")`, catch 403 → `showErrorMessage("Sync failed: GitHub API rate limit exceeded...")`, catch unknown → `showErrorMessage("Sync failed: {error.message}")`
-- [ ] T015 [US2] Add partial failure handling to `extensions/copilot-tools-sync/src/sync.ts` — track `failedCount` and `failures` array alongside `successCount`, on partial failure show `showWarningMessage("Synced {n} files. {m} files failed to sync.")`, on total failure show `showErrorMessage`; when no files found show `showInformationMessage('No Copilot tool files found matching the "cp." prefix.')`
-- [ ] T016 [US2] Add repository format validation to `extensions/copilot-tools-sync/src/sync.ts` — validate configured value matches `owner/repo` format (non-empty owner and repo separated by `/`), show `showErrorMessage('Invalid repository format: "{value}". Expected "owner/repo".')` on invalid input, fall back to default on empty value
-- [ ] T017 [US2] Recompile, repackage VSIX, and manually validate error scenarios (invalid repository setting, network disconnect)
+- [x] T013 [US2] Add concurrency guard to `syncCopilotTools` in `extensions/copilot-tools-sync/src/sync.ts` — module-level `let isSyncing = false`, check at entry and show `showWarningMessage("A sync is already in progress.")` if true, wrap sync logic in `try/finally` to always clear flag
+- [x] T014 [US2] Add error handling to `syncCopilotTools` in `extensions/copilot-tools-sync/src/sync.ts` — catch network errors → `showErrorMessage("Sync failed: unable to reach repository...")`, catch 404 → `showErrorMessage("Sync failed: repository not found...")`, catch 403 → `showErrorMessage("Sync failed: GitHub API rate limit exceeded...")`, catch unknown → `showErrorMessage("Sync failed: {error.message}")`
+- [x] T015 [US2] Add partial failure handling to `extensions/copilot-tools-sync/src/sync.ts` — track `failedCount` and `failures` array alongside `successCount`, on partial failure show `showWarningMessage("Synced {n} files. {m} files failed to sync.")`, on total failure show `showErrorMessage`; when no files found show `showInformationMessage('No Copilot tool files found matching the "cp." prefix.')`
+- [x] T016 [US2] Add repository format validation to `extensions/copilot-tools-sync/src/sync.ts` — validate configured value matches `owner/repo` format (non-empty owner and repo separated by `/`), show `showErrorMessage('Invalid repository format: "{value}". Expected "owner/repo".')` on invalid input, fall back to default on empty value
+- [x] T017 [US2] Recompile, repackage VSIX, and manually validate error scenarios (invalid repository setting, network disconnect)
 
 **Checkpoint**: User Story 2 complete — all error paths produce clear user-facing notifications
 
@@ -105,8 +105,8 @@ Verified on current machine (2026-02-14):
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Verify configuration contribution in `extensions/copilot-tools-sync/package.json` renders correctly in VS Code Settings UI under "Copilot Tools Sync", change `copilotToolsSync.repository` in settings to a different public repository, run sync, verify files fetched from the configured source
-- [ ] T019 [US3] Recompile and repackage VSIX for final configuration validation
+- [x] T018 [US3] Verify configuration contribution in `extensions/copilot-tools-sync/package.json` renders correctly in VS Code Settings UI under "Copilot Tools Sync", change `copilotToolsSync.repository` in settings to a different public repository, run sync, verify files fetched from the configured source
+- [x] T019 [US3] Recompile and repackage VSIX for final configuration validation
 
 **Checkpoint**: User Story 3 complete — repository is fully configurable via VS Code settings
 
@@ -116,9 +116,9 @@ Verified on current machine (2026-02-14):
 
 **Purpose**: Documentation and build integration
 
-- [ ] T020 [P] Create `extensions/copilot-tools-sync/README.md` with extension overview, installation instructions (build + side-load), usage (command palette), configuration (repository setting), and troubleshooting
-- [ ] T021 [P] Add Makefile targets at repository root `Makefile` for `build-extension` (`cd extensions/copilot-tools-sync && npm install && npm run compile`), `package-extension` (`cd extensions/copilot-tools-sync && npx vsce package`), and `install-extension` (`code --install-extension` on generated `.vsix`)
-- [ ] T022 Run quickstart.md validation — follow the 5-minute setup steps in `specs/4-copilot-tools-sync/quickstart.md` and verify the extension works end-to-end
+- [x] T020 [P] Create `extensions/copilot-tools-sync/README.md` with extension overview, installation instructions (build + side-load), usage (command palette), configuration (repository setting), and troubleshooting
+- [x] T021 [P] Add Makefile targets at repository root `Makefile` for `build-extension` (`cd extensions/copilot-tools-sync && npm install && npm run compile`), `package-extension` (`cd extensions/copilot-tools-sync && npx vsce package`), and `install-extension` (`code --install-extension` on generated `.vsix`)
+- [x] T022 Run quickstart.md validation — follow the 5-minute setup steps in `specs/4-copilot-tools-sync/quickstart.md` and verify the extension works end-to-end
 
 ---
 

@@ -1,6 +1,6 @@
 # Context Engineering Guide - Makefile
 
-.PHONY: slides serve clean help pr push
+.PHONY: slides serve clean help pr push build-extension package-extension install-extension
 
 PORT := 8080
 SLIDES_URL := http://localhost:$(PORT)/context-engineering-slides.html
@@ -16,6 +16,9 @@ help:
 	@echo "  make push              - Push current branch to origin"
 	@echo "  make pr                - Create a GitHub PR with AI-generated description"
 	@echo "  make pr DRY_RUN=1      - Generate PR content without creating the PR"
+	@echo "  make build-extension   - Build the Copilot Tools Sync extension"
+	@echo "  make package-extension - Package the extension as a VSIX file"
+	@echo "  make install-extension - Install the packaged extension into VS Code"
 	@echo "  make help              - Show this help message"
 
 # Start server and open slideshow in browser
@@ -59,3 +62,16 @@ commit:
 # Push current branch to origin
 push:
 	@git push origin
+
+# Build the Copilot Tools Sync extension
+build-extension:
+	@cd extensions/copilot-tools-sync && npm install && npm run compile
+
+# Package the extension as a VSIX file
+package-extension: build-extension 
+	@cd extensions/copilot-tools-sync && npx vsce package --allow-missing-repository
+
+# Build, package, and install the extension into VS Code and VS Code Insiders
+install-extension: package-extension
+	@code --install-extension extensions/copilot-tools-sync/copilot-tools-sync-0.0.1.vsix
+	@code-insiders --install-extension extensions/copilot-tools-sync/copilot-tools-sync-0.0.1.vsix
