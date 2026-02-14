@@ -62,6 +62,7 @@ flowchart TD
 **Implement: Constitution Gates (Prevents Context Poisoning)**
 
 1. Create `.specify/memory/constitution.md`:
+
    ```markdown
    # Project Constitution
    
@@ -77,6 +78,7 @@ flowchart TD
    ```
 
 2. Reference in your spec files:
+
    ```markdown
    ## Constitution Check
    
@@ -95,6 +97,7 @@ flowchart TD
 **Implement: Instruction Files (Reduces Context Confusion)**
 
 1. Create `.github/prompts/[language].instructions.md`:
+
    ```markdown
    <instructions>
    You are an expert [language] developer.
@@ -125,31 +128,37 @@ flowchart TD
 ### Symptoms → Diagnosis → Fix
 
 **🔴 AI gives incorrect or harmful outputs**
+
 - **Diagnosis**: Context Poisoning (bad data in context)
 - **Fix**: Add validation gates (Spec Kit) or authoritative source declarations (Copilot)
 - **Section**: §5.3, §3.3
 
 **🔴 AI forgets earlier conversation details**
+
 - **Diagnosis**: Context Rot (attention degradation)
 - **Fix**: Implement compaction or structured note-taking
 - **Section**: §4.2, §4.4
 
 **🔴 AI focuses on wrong information**
+
 - **Diagnosis**: Context Distraction (too much irrelevant info)
 - **Fix**: Use progressive disclosure or targeted retrieval
 - **Section**: §4.3, §6.4
 
 **🔴 AI gives inconsistent responses**
+
 - **Diagnosis**: Context Confusion (conflicting information)
 - **Fix**: Establish single source of truth, clear precedence rules
 - **Section**: §5.3, §6.3
 
 **🔴 AI summarizes away important details**
+
 - **Diagnosis**: Brevity Bias
 - **Fix**: Use structured incremental updates (ACE Framework)
 - **Section**: §4.1
 
 **🔴 Context becoming too large**
+
 - **Diagnosis**: Attention Budget Exhaustion
 - **Fix**: Implement compaction, sub-agent architecture, or context isolation
 - **Section**: §4.2, §4.5
@@ -215,6 +224,7 @@ flowchart TD
 ### Academic Concept → Your Tool
 
 **Spec Kit Users**:
+
 ```
 Structured Updates       → Phase-based workflow (plan.md → research.md → data-model.md)
 Memory System           → specs/[feature]/ directories persist across commands
@@ -224,6 +234,7 @@ Validation Gates        → Constitution checks in plan.md
 ```
 
 **GitHub Copilot Users**:
+
 ```
 Persistent Prompts      → .github/prompts/*.instructions.md
 Just-in-Time Retrieval  → semantic_search + read_file tools
@@ -237,31 +248,37 @@ Structured Organization → XML tags: <instructions>, <rules>, <examples>
 ## When to Read the Full Guide
 
 **Read §1-§2** (15 min) if:
+
 - You're new to context engineering concept
 - Need to explain it to teammates
 - Want theoretical foundation
 
 **Read §3-§4** (30 min) if:
+
 - You understand basics, want patterns
 - Need to solve specific failure modes
 - Planning context architecture
 
 **Read §5** (20 min) if:
+
 - You use Spec Kit
 - Want to optimize Spec Kit setup
 - Need concrete Spec Kit examples
 
 **Read §6** (20 min) if:
+
 - You use GitHub Copilot
 - Want to optimize Copilot instructions
 - Need concrete Copilot examples
 
 **Read §7** (15 min) if:
+
 - You're building AI tools
 - Need advanced patterns (multi-agent, compression)
 - Want research frontier overview
 
 **Read §8** (10 min) if:
+
 - You want academic papers
 - Need comprehensive tool lists
 - Planning deep exploration

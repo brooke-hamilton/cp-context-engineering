@@ -455,7 +455,7 @@
 </head>
 <body>
     <div class="progress-bar" id="progressBar"></div>
-    
+
     <div class="slide-container" id="slideContainer">
         
         <!-- Slide 1: Title -->
@@ -841,6 +841,7 @@
 You are writing shell scripts for the Radius platform.
 
 &lt;rules&gt;
+
 - Use bash with strict mode: set -euo pipefail
 - Always quote variables: "${variable}"
 - Check command existence before use
@@ -849,6 +850,7 @@ You are writing shell scripts for the Radius platform.
 &lt;/rules&gt;
 
 &lt;conventions&gt;
+
 - Script naming: lowercase-with-hyphens.sh
 - Environment variables: UPPERCASE_WITH_UNDERSCORES
 - Exit codes: 0 for success, 1 for general errors
@@ -922,22 +924,22 @@ You are writing shell scripts for the Radius platform.
             // Wrap around
             if (index < 0) index = 0;
             if (index >= totalSlides) index = totalSlides - 1;
-            
+
             currentSlide = index;
-            
+
             // Hide all slides
             slides.forEach(slide => slide.classList.remove('active'));
-            
+
             // Show current slide
             slides[currentSlide].classList.add('active');
-            
+
             // Update progress bar
             const progress = ((currentSlide + 1) / totalSlides) * 100;
             progressBar.style.width = progress + '%';
-            
+
             // Update counter
             slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
-            
+
             // Update button states
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === totalSlides - 1;
@@ -970,10 +972,10 @@ You are writing shell scripts for the Radius platform.
         document.addEventListener('click', (e) => {
             const x = e.clientX;
             const width = window.innerWidth;
-            
+
             // Don't navigate if clicking on buttons
             if (e.target.closest('.nav-controls')) return;
-            
+
             if (x < width * 0.3) {
                 changeSlide(-1);
             } else if (x > width * 0.7) {
@@ -997,7 +999,7 @@ You are writing shell scripts for the Radius platform.
         function handleSwipe() {
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
-            
+
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0) {
                     changeSlide(1); // Swipe left = next
@@ -1019,5 +1021,6 @@ You are writing shell scripts for the Radius platform.
         // Initialize
         showSlide(0);
     </script>
+
 </body>
 </html>

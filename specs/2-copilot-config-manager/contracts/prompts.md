@@ -177,6 +177,7 @@ applyTo: '{{glob_pattern}}'
 | Rust | `**/*.rs` |
 | Java | `**/*.java` |
 | Ruby | `**/*.rb` |
+
 ```
 
 ---
@@ -251,6 +252,7 @@ The agent prompt should include:
 - `implementation-planner`: Create detailed plans before coding
 - `security-reviewer`: Review for security vulnerabilities
 - `documentation-writer`: Generate and maintain docs
+
 ```
 
 ---
@@ -314,6 +316,7 @@ argument-hint: '{{hint}}'
 - **Analysis**: Review and report on code
 - **Documentation**: Generate docs and comments
 - **Testing**: Create or improve tests
+
 ```
 
 ---
@@ -346,11 +349,13 @@ Capability: {{capability}}
 Create `skills/{{name}}/` with:
 
 ```
+
 skills/{{name}}/
 ├── SKILL.md           # Skill definition
 ├── templates/         # Optional: template files
 ├── examples/          # Optional: example files
 └── schemas/           # Optional: schema files
+
 ```
 
 ### SKILL.md Frontmatter
@@ -375,6 +380,7 @@ applyTo: '{{glob_pattern}}'  # Optional
 1. Check if `skills/{{name}}/` already exists
 2. Skill name must be 1-64 characters
 3. Description must be 10-1024 characters
+
 ```
 
 ---

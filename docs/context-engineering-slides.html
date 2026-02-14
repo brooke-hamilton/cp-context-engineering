@@ -397,7 +397,7 @@
 </head>
 <body>
     <div class="progress-bar" id="progressBar"></div>
-    
+
     <div class="slide-container" id="slideContainer">
         
         <!-- Slide 1: Title -->
@@ -567,11 +567,13 @@
                 <div class="column">
                     <h3>Example</h3>
                     <pre><code>## Decisions
-- 2026-01-15: Chose REST over 
-  GraphQL (simpler client 
+
+- 2026-01-15: Chose REST over
+  GraphQL (simpler client
   integration)
   
 ## Blocked
+
 - Waiting on auth service</code></pre>
                 </div>
             </div>
@@ -659,19 +661,22 @@
                 <div class="column">
                     <h3>❌ Naive Summarization</h3>
                     <pre><code><!-- After 3 iterations -->
-Summary: The system should 
-be secure, scalable, and 
+
+Summary: The system should
+be secure, scalable, and
 user-friendly.</code></pre>
                     <p style="color: #f5576c;">Details lost!</p>
                 </div>
                 <div class="column">
                     <h3>✅ Structured Updates</h3>
                     <pre><code>Security Requirements:
+
 - OAuth2 with PKCE (iter 1)
 - RBAC with 3 roles (iter 2)
 - AES-256 encryption (iter 3)
 
 Scalability Requirements:
+
 - 100+ pods scaling (iter 1)
 - DB sharding by tenant (iter 2)
 - CDN for static (iter 3)</code></pre>
@@ -799,9 +804,11 @@ Scalability Requirements:
             <h2>Copilot: Instruction Files</h2>
             <p><strong>Purpose:</strong> Define context once, apply to all TypeScript interactions automatically.</p>
             <pre><code>&lt;instructions&gt;
+
 You are an expert TypeScript developer following strict type safety practices.
 
 &lt;rules&gt;
+
 - Always use explicit return types for functions
 - Prefer `readonly` for immutable data structures
 - Use discriminated unions for type narrowing
@@ -809,6 +816,7 @@ You are an expert TypeScript developer following strict type safety practices.
 &lt;/rules&gt;
 
 &lt;conventions&gt;
+
 - Test files: `*.test.ts` co-located with source
 - Error handling: Custom `AppError` class with status codes
 &lt;/conventions&gt;
@@ -1009,22 +1017,22 @@ You are an expert TypeScript developer following strict type safety practices.
             // Wrap around
             if (index < 0) index = 0;
             if (index >= totalSlides) index = totalSlides - 1;
-            
+
             currentSlide = index;
-            
+
             // Hide all slides
             slides.forEach(slide => slide.classList.remove('active'));
-            
+
             // Show current slide
             slides[currentSlide].classList.add('active');
-            
+
             // Update progress bar
             const progress = ((currentSlide + 1) / totalSlides) * 100;
             progressBar.style.width = progress + '%';
-            
+
             // Update counter
             slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
-            
+
             // Update button states
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === totalSlides - 1;
@@ -1057,10 +1065,10 @@ You are an expert TypeScript developer following strict type safety practices.
         document.addEventListener('click', (e) => {
             const x = e.clientX;
             const width = window.innerWidth;
-            
+
             // Don't navigate if clicking on buttons
             if (e.target.closest('.nav-controls')) return;
-            
+
             if (x < width * 0.3) {
                 changeSlide(-1);
             } else if (x > width * 0.7) {
@@ -1084,7 +1092,7 @@ You are an expert TypeScript developer following strict type safety practices.
         function handleSwipe() {
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
-            
+
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0) {
                     changeSlide(1); // Swipe left = next
@@ -1106,5 +1114,6 @@ You are an expert TypeScript developer following strict type safety practices.
         // Initialize
         showSlide(0);
     </script>
+
 </body>
 </html>

@@ -16,9 +16,10 @@
 ### Source 1: Context Engineering 2.0 (arXiv:2510.26493)
 
 **Citation**: Qishuo Hua, Lyumanshan Ye, Dayuan Fu, et al. "Context Engineering 2.0: The Context of Context Engineering." arXiv:2510.26493, October 30, 2025.  
-**URL**: https://arxiv.org/abs/2510.26493
+**URL**: <https://arxiv.org/abs/2510.26493>
 
 **Key Concepts**:
+
 - **Historical Evolution**: Context engineering has evolved over 20+ years through distinct phases based on machine intelligence levels (1990s HCI → modern agent systems)
 - **Philosophical Foundation**: Draws on Marx's concept that "the human essence is the ensemble of social relations" - machines must understand human situations and purposes through context
 - **Central Question**: How can machines better understand human intent and operate effectively within complex situations?
@@ -30,9 +31,10 @@
 ### Source 2: Agentic Context Engineering (arXiv:2510.04618)
 
 **Citation**: Qizheng Zhang, Changran Hu, Shubhangi Upasani, et al. "Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models." arXiv:2510.04618, October 6, 2025.  
-**URL**: https://arxiv.org/abs/2510.04618
+**URL**: <https://arxiv.org/abs/2510.04618>
 
 **Key Concepts**:
+
 - **ACE Framework**: Contexts as evolving playbooks with three core processes: Generation, Reflection, Curation
 - **Performance Data**: +10.6% improvement on agent benchmarks, +8.6% on finance tasks
 - **Critical Failure Modes**:
@@ -47,7 +49,7 @@
 ### Source 3: Anthropic Engineering Blog
 
 **Citation**: Anthropic Engineering Team. "Effective Context Engineering for AI Agents." September 29, 2025.  
-**URL**: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+**URL**: <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
 
 **Key Distinctions**:
 
@@ -78,9 +80,10 @@
 ### Source 4: GitHub Awesome-Context-Engineering Repositories
 
 **Primary Repository**: Meirtz/Awesome-Context-Engineering (2,833 stars)  
-**URL**: https://github.com/Meirtz/Awesome-Context-Engineering
+**URL**: <https://github.com/Meirtz/Awesome-Context-Engineering>
 
 **Formal Definition**:
+
 ```
 Context = Assemble(instructions, knowledge, tools, memory, state, query)
 
@@ -89,12 +92,14 @@ Assemble* = argmax E[Reward(LLM(context), target)]
 ```
 
 **Four Fundamental Principles**:
+
 1. System-level optimization (not string manipulation)
 2. Dynamic adaptation to query and state
 3. Information-theoretic optimality in retrieval
 4. Structural sensitivity for LLM processing
 
 **Production Categories**:
+
 - **Context Scaling**: Position interpolation, memory-efficient attention, ultra-long sequences (100K+ tokens)
 - **Memory Systems**: MemGPT, Mem0, episodic memory, graph-based memory
 - **RAG Implementations**: Naive → Advanced → Modular → Graph-Based → Agentic
@@ -108,15 +113,17 @@ Assemble* = argmax E[Reward(LLM(context), target)]
 **Alternatives considered**: Summarize all 1,400 papers - rejected as infeasible and overwhelming
 
 **Secondary Repository**: jihoo-kim/awesome-context-engineering (103 stars)  
-**URL**: https://github.com/jihoo-kim/awesome-context-engineering
+**URL**: <https://github.com/jihoo-kim/awesome-context-engineering>
 
 **Four-Category Framework**:
+
 1. **✍️ Write Context** (Long-term Memory): mem0, letta, graphiti, Memary
 2. **🔎 Select Context** (MCP): fastmcp, mcp-agent, modelcontextprotocol/servers
 3. **✂️ Compress Context**: LLMLingua, xRAG, recomp, CompAct
 4. **📦 Isolate Context** (Multi-Agent): MetaGPT, agno, camel, PraisonAI
 
 **Industry Quotes**:
+
 - **Tobias Lütke (Shopify)**: "Context engineering describes the core skill better: the art of providing all the context for the task to be plausibly solvable by the LLM"
 - **Andrej Karpathy (OpenAI)**: "+1 for context engineering over prompt engineering...the delicate art and science of filling the context window with just the right information"
 
@@ -254,17 +261,17 @@ Based on research findings, the guide should:
    - Spec Kit directory structure as context organization
    - Copilot context lifecycle (pre-indexed → just-in-time → compacted)
 
-3. **Examples Strategy**: 
+3. **Examples Strategy**:
    - Show Spec Kit's own .specify/ directory as living example
    - Demonstrate Copilot instruction files from real projects
    - Include before/after comparisons for failure mode mitigations
 
-4. **Citation Strategy**: 
+4. **Citation Strategy**:
    - Link directly to arXiv papers for academic credibility
    - Reference Anthropic blog for production patterns
    - Point to awesome-context-engineering for 1,400+ additional papers
 
-5. **Practical Focus**: 
+5. **Practical Focus**:
    - Every concept must include "How to implement this in your project" section
    - Step-by-step instructions with file paths and code snippets
    - Checklist format for quick reference
@@ -272,6 +279,7 @@ Based on research findings, the guide should:
 ## Next Steps (Phase 1)
 
 With research complete, proceed to:
+
 1. **data-model.md**: Define key entities (Context, Context Engineering Pattern, etc.)
 2. **contracts/outline.md**: Detailed content structure with section specifications
 3. **quickstart.md**: Quick reference for practitioners

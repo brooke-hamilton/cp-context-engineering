@@ -71,6 +71,7 @@ Define the complete structure, section specifications, and content requirements 
 ### 1.1 What is Context Engineering?
 
 **Content Specification**:
+
 - Opening definition in plain language: "Context engineering is the systematic practice of designing, organizing, and maintaining the information that AI systems use to understand and respond to tasks."
 - Analogy: Like giving someone directions - not just what to do (prompt) but what they need to know to do it well (context)
 - Historical note: Not new - evolved over 20+ years (cite arXiv:2510.26493)
@@ -82,6 +83,7 @@ Define the complete structure, section specifications, and content requirements 
 ### 1.2 Who Should Read This Guide?
 
 **Content Specification**:
+
 - **Developers**: Using GitHub Copilot, implementing AI features, building agent systems
 - **Technical Writers**: Creating AI-readable documentation, structuring knowledge bases
 - **Engineering Leaders**: Evaluating AI tooling, establishing team practices
@@ -90,6 +92,7 @@ Define the complete structure, section specifications, and content requirements 
 ### 1.3 How to Use This Guide
 
 **Content Specification**:
+
 - Navigation strategy: Progressive (read start-to-finish) or targeted (jump to tool sections)
 - Symbol key: 📖 Academic concept, 🛠️ Practical pattern, ⚠️ Common mistake
 - Mermaid diagram: Document structure and learning path
@@ -118,6 +121,7 @@ flowchart LR
 ### 2.1 Understanding Context
 
 **Content Specification**:
+
 - Formal definition: "The complete information payload provided to a Large Language Model at inference time"
 - Components breakdown with examples:
   - **Instructions**: "You are a Python expert helping with debugging"
@@ -147,6 +151,7 @@ graph TD
 ### 2.2 Context Engineering vs. Prompt Engineering
 
 **Content Specification**:
+
 - Comparison table (from Anthropic research):
 
 | Aspect | Prompt Engineering | Context Engineering |
@@ -165,6 +170,7 @@ graph TD
 ### 2.3 Common Misconceptions
 
 **Content Specification**:
+
 - ⚠️ **Misconception 1**: "Context engineering is just a rebranding of prompt engineering"
   - **Reality**: Context encompasses much more than prompts (tools, memory, retrieval strategies)
 - ⚠️ **Misconception 2**: "More context is always better"
@@ -179,6 +185,7 @@ graph TD
 ### 2.4 Why Context Engineering Matters
 
 **Content Specification**:
+
 - **For Developers**: Better AI assistance, fewer hallucinations, more reliable code generation
 - **For Teams**: Consistent AI behavior, knowledge preservation, onboarding acceleration
 - **For Organizations**: Scalable AI adoption, reduced trial-and-error, measurable improvements
@@ -220,6 +227,7 @@ graph TD
 ### 3.2 Attention Budget and Context Rot
 
 **Content Specification**:
+
 - 📖 **Attention Budget**: Like human working memory - finite capacity depletes with each token
 - 📖 **Context Rot**: As token count increases, model's recall ability decreases
 - **Architectural Constraint**: n² pairwise relationships for n tokens
@@ -251,6 +259,7 @@ graph TD
 ### 4.1 Pattern: Structured Incremental Updates (ACE Framework)
 
 **Content Specification**:
+
 - 📖 **Source**: arXiv:2510.04618 (Agentic Context Engineering)
 - **Intent**: Prevent brevity bias and context collapse during iterative refinement
 - **Problem**: Repeated summarization loses critical details
@@ -267,6 +276,7 @@ graph TD
 ### 4.2 Pattern: Compaction
 
 **Content Specification**:
+
 - 📖 **Source**: Anthropic Engineering Blog
 - **Intent**: Manage context window limits for long-horizon tasks
 - **Problem**: Conversation exceeds context limit, forcing loss of information
@@ -282,6 +292,7 @@ graph TD
 ### 4.3 Pattern: Progressive Disclosure
 
 **Content Specification**:
+
 - **Intent**: Load information just-in-time based on task needs
 - **Problem**: Upfront loading wastes attention budget on irrelevant information
 - **Solution**: Hybrid retrieval strategy
@@ -296,6 +307,7 @@ graph TD
 ### 4.4 Pattern: Structured Note-Taking (Agentic Memory)
 
 **Content Specification**:
+
 - 📖 **Source**: Anthropic Engineering Blog, multiple production systems
 - **Intent**: Externalize memory beyond context window for long-horizon tasks
 - **Problem**: Context window cannot hold all information for multi-session work
@@ -311,6 +323,7 @@ graph TD
 ### 4.5 Pattern: Sub-Agent Architectures
 
 **Content Specification**:
+
 - **Intent**: Separate concerns with specialized agents having clean context windows
 - **Problem**: Single agent's context becomes bloated with mixed concerns
 - **Solution**: Main coordinator + specialized sub-agents
@@ -326,6 +339,7 @@ graph TD
 ### 4.6 Pattern: Model Context Protocol (MCP)
 
 **Content Specification**:
+
 - 📖 **Source**: jihoo-kim/awesome-context-engineering (Select Context category)
 - **Intent**: Standardized context retrieval across tools and data sources
 - **Problem**: Each tool implements custom retrieval logic (fragmentation)
@@ -349,6 +363,7 @@ graph TD
 ### 5.1 Overview: Spec Kit as Context System
 
 **Content Specification**:
+
 - Spec Kit is not a prompt - it's a complete context delivery architecture
 - Directory structure as context organization
 - Templates as pre-computed structure (Principle 3: Information-Theoretic Optimality)
@@ -376,6 +391,7 @@ graph TD
 ### 5.3 Example: Constitution as Context Validator
 
 **Content Specification**:
+
 - File: `.specify/memory/constitution.md`
 - Purpose: Single source of truth preventing Context Confusion
 - Mechanism: Gates evaluated before processing (fail-fast if violated)
@@ -386,6 +402,7 @@ graph TD
 ### 5.4 Example: Phase-Based Disclosure
 
 **Content Specification**:
+
 - Problem: Loading all project details upfront overwhelms agent
 - Solution: Phase 0 (research) → Phase 1 (design) → Phase 2 (implementation)
 - **Phase 0**: Load only spec, generate research.md
@@ -397,6 +414,7 @@ graph TD
 ### 5.5 Example: Templates as Context Structure
 
 **Content Specification**:
+
 - File: `.specify/templates/plan-template.md`
 - Purpose: Pre-structured format reduces agent's cognitive load
 - Mechanism: Agent fills template sections vs. inventing structure
@@ -407,6 +425,7 @@ graph TD
 ### 5.6 Try It Yourself: Implement Context Engineering in Your Project
 
 **Content Specification**:
+
 - Step 1: Create `.specify/` directory structure
 - Step 2: Write constitution.md with your project's core principles
 - Step 3: Copy templates from this repository
@@ -426,6 +445,7 @@ graph TD
 ### 6.1 Overview: Copilot as Context Manager
 
 **Content Specification**:
+
 - Copilot manages context across: workspace indexing, instruction files, conversation history, tool calls
 - Hybrid retrieval: Pre-indexed embeddings + just-in-time file reads
 - Auto-compaction for long conversations
@@ -453,10 +473,12 @@ graph TD
 ### 6.3 Example: Instruction Files as Persistent Context
 
 **Content Specification**:
+
 - File: `.github/prompts/typescript.instructions.md`
 - Purpose: Define context once, apply to all TypeScript interactions
 - Mechanism: Loaded automatically when working with matching files
 - **Code Example**: Instruction file structure
+
   ```markdown
   <instructions>
   You are an expert TypeScript developer following strict type safety.
@@ -472,12 +494,14 @@ graph TD
   </examples>
   </instructions>
   ```
+
 - **Failure Mode Prevented**: Context Confusion (inconsistent type practices), Context Distraction (irrelevant language features)
 - **Pattern**: Persistent System Prompts
 
 ### 6.4 Example: Progressive File Loading
 
 **Content Specification**:
+
 - Problem: Loading all workspace files upfront wastes attention budget
 - Solution: Three-tier strategy
   - **Tier 1**: Pre-indexed embeddings (always loaded, minimal tokens)
@@ -490,6 +514,7 @@ graph TD
 ### 6.5 Example: Tool Calling for Dynamic Context
 
 **Content Specification**:
+
 - Available tools: semantic_search, read_file, grep_search, list_dir, run_in_terminal
 - Tool as context retrieval mechanism (not just action)
 - **Code Example**: Agent using semantic_search to find relevant files, then read_file for details
@@ -499,6 +524,7 @@ graph TD
 ### 6.6 Try It Yourself: Improve Your Copilot Context
 
 **Content Specification**:
+
 - Step 1: Create `.github/prompts/` directory
 - Step 2: Write [language].instructions.md for your primary language
 - Step 3: Include project-specific rules and examples
@@ -518,6 +544,7 @@ graph TD
 ### 7.1 Multi-Agent Communication Patterns
 
 **Content Specification**:
+
 - **Protocols**: Model Context Protocol (MCP), Agent-to-Agent (A2A), Agent Network Protocol (ANP)
 - **Frameworks**: AutoGen, MetaGPT, CAMEL, ChatDev
 - **Challenge**: Context coordination across agents
@@ -527,6 +554,7 @@ graph TD
 ### 7.2 Context Compression Techniques
 
 **Content Specification**:
+
 - **Prompt Compression**: LLMLingua, sammo, Selective_Context
 - **RAG Compression**: xRAG, recomp, CompAct
 - **Goal**: Retain information while reducing token count
@@ -536,6 +564,7 @@ graph TD
 ### 7.3 Graph-Based Context Retrieval
 
 **Content Specification**:
+
 - **Motivation**: Relationships between concepts matter (not just semantic similarity)
 - **Implementations**: GraphRAG, Knowledge Graph-based memory
 - **Example**: Code dependencies as graph for better context selection
@@ -545,6 +574,7 @@ graph TD
 ### 7.4 Future Directions
 
 **Content Specification**:
+
 - **Ultra-Long Context Windows**: 1M+ tokens (implications for context engineering)
 - **Multi-Modal Context**: Images, audio, video as context components
 - **Continuous Learning**: Contexts that evolve automatically from experience
@@ -562,21 +592,23 @@ graph TD
 ### 8.1 Academic Papers
 
 **Content Specification**:
+
 1. **Context Engineering 2.0: The Context of Context Engineering**
    - Authors: Qishuo Hua, Lyumanshan Ye, Dayuan Fu, et al.
-   - URL: https://arxiv.org/abs/2510.26493
+   - URL: <https://arxiv.org/abs/2510.26493>
    - Key Topics: Historical evolution, philosophical foundations
 
 2. **Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models**
    - Authors: Qizheng Zhang, Changran Hu, Shubhangi Upasani, et al.
-   - URL: https://arxiv.org/abs/2510.04618
+   - URL: <https://arxiv.org/abs/2510.04618>
    - Key Topics: ACE Framework, performance data, failure modes
 
 ### 8.2 Engineering Blogs and Resources
 
 **Content Specification**:
+
 1. **Anthropic Engineering Blog**
-   - URL: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+   - URL: <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
    - Key Topics: Production patterns, Claude Code examples, long-horizon techniques
 
 2. **GitHub Copilot Documentation**
@@ -586,21 +618,23 @@ graph TD
 ### 8.3 Curated Repositories
 
 **Content Specification**:
+
 1. **Meirtz/Awesome-Context-Engineering** (2,833 stars)
-   - URL: https://github.com/Meirtz/Awesome-Context-Engineering
+   - URL: <https://github.com/Meirtz/Awesome-Context-Engineering>
    - Coverage: 1,400+ papers, formal definitions, comprehensive taxonomy
 
 2. **jihoo-kim/awesome-context-engineering** (103 stars)
-   - URL: https://github.com/jihoo-kim/awesome-context-engineering
+   - URL: <https://github.com/jihoo-kim/awesome-context-engineering>
    - Coverage: Four-category framework, practical tools
 
 3. **yzfly/awesome-context-engineering** (89 stars)
-   - URL: https://github.com/yzfly/awesome-context-engineering
+   - URL: <https://github.com/yzfly/awesome-context-engineering>
    - Coverage: Case studies, failure modes, implementation patterns
 
 ### 8.4 Tools and Frameworks
 
 **Content Specification**:
+
 - **Memory Systems**: mem0, letta (MemGPT), graphiti, Memary
 - **MCP Servers**: fastmcp, mcp-agent, modelcontextprotocol/servers
 - **Compression**: LLMLingua, xRAG, CompAct
@@ -609,6 +643,7 @@ graph TD
 ### 8.5 This Repository
 
 **Content Specification**:
+
 - **URL**: [This repository URL]
 - **Purpose**: Meta-example of context engineering principles in action
 - **Explore**: .specify/ directory structure, constitution.md, this guide's own specs/
@@ -625,6 +660,7 @@ graph TD
 ### Appendix B: Quick Reference Cards
 
 **Content Specification**:
+
 1. **Pattern Quick Reference**: One-line summaries of all patterns
 2. **Failure Mode Checklist**: Symptoms and fixes
 3. **Tool Mapping Cheatsheet**: Quick lookup for concept→implementation
@@ -632,6 +668,7 @@ graph TD
 ### Appendix C: Further Exploration Paths
 
 **Content Specification**:
+
 - **For Developers**: Next projects to try implementing patterns
 - **For Researchers**: Open questions and research opportunities
 - **For Tool Builders**: Ideas for improving context engineering in tools
@@ -641,24 +678,28 @@ graph TD
 ## Content Standards
 
 ### Writing Style
+
 - **Tone**: Professional but approachable, educational without being patronizing
 - **Voice**: Second person for instructions ("You can implement..."), third person for concepts ("Context engineering involves...")
 - **Clarity**: Jargon introduced gradually with plain-language definitions first
 - **Examples**: Always concrete, never hypothetical ("Spec Kit's constitution.md" not "a validation file")
 
 ### Code Examples
+
 - **Format**: Markdown code blocks with language specified
 - **Completeness**: Runnable when possible, clearly marked if pseudocode
 - **Context**: Always explain what example demonstrates
 - **Accessibility**: Include comments for non-obvious logic
 
 ### Mermaid Diagrams
+
 - **Purpose**: Illustrate relationships, workflows, architectures (not decorative)
 - **Simplicity**: Maximum 7-10 nodes per diagram
 - **Labels**: Clear, concise node and edge labels
 - **Style**: Consistent color coding (e.g., blue for context, green for patterns, yellow for tools)
 
 ### Citations
+
 - **Format**: Inline author-date (Anthropic 2025) with full reference in §8
 - **Links**: Always provide direct URLs
 - **Verification**: All links must be publicly accessible (no paywalls)
