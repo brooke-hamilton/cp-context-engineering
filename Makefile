@@ -1,6 +1,6 @@
 # Context Engineering Guide - Makefile
 
-.PHONY: slides serve clean help
+.PHONY: slides serve clean help pr
 
 PORT := 8080
 SLIDES_URL := http://localhost:$(PORT)/context-engineering-slides.html
@@ -8,10 +8,14 @@ SLIDES_URL := http://localhost:$(PORT)/context-engineering-slides.html
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  make slides  - Start server and open slideshow in browser"
-	@echo "  make serve   - Start HTTP server on port $(PORT)"
-	@echo "  make clean   - Stop any running HTTP servers"
-	@echo "  make help    - Show this help message"
+	@echo "  make slides            - Start server and open slideshow in browser"
+	@echo "  make serve             - Start HTTP server on port $(PORT)"
+	@echo "  make clean             - Stop any running HTTP servers"
+	@echo "  make commit            - Stage and commit changes with AI-generated message"
+	@echo "  make commit DRY_RUN=1  - Generate commit message without committing"
+	@echo "  make pr                - Create a GitHub PR with AI-generated description"
+	@echo "  make pr DRY_RUN=1      - Generate PR content without creating the PR"
+	@echo "  make help              - Show this help message"
 
 # Start server and open slideshow in browser
 # Note: To open in VS Code Simple Browser, use Command Palette > "Simple Browser: Show"
@@ -42,3 +46,11 @@ clean:
 	@-pkill -f "python3 -m http.server $(PORT)" 2>/dev/null || true
 	@-fuser -k $(PORT)/tcp 2>/dev/null || true
 	@echo "Server stopped."
+
+# Create a GitHub PR with AI-generated title and description
+pr:
+	@bash scripts/create-pr.sh $(if $(DRY_RUN),--dry-run)
+
+# Stage and commit changes with an AI-generated commit message
+commit:
+	@bash scripts/commit.sh $(if $(DRY_RUN),--dry-run)
