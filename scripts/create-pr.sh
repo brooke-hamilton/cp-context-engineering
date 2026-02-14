@@ -401,6 +401,10 @@ ${FULL_DIFF}"
     PR_TITLE=$(printf '%s\n' "${copilot_output}" | head -1)
     PR_DESCRIPTION=$(printf '%s\n' "${copilot_output}" | tail -n +3)
 
+    # Strip trailing commentary line the model often appends
+    PR_DESCRIPTION=$(printf '%s\n' "${PR_DESCRIPTION}" \
+        | sed '$ d')
+
     if [[ -z "${PR_TITLE}" ]]; then
         echo "ERROR: Copilot CLI returned an empty title." >&2
         exit 1
