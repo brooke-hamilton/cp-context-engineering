@@ -17,7 +17,7 @@
 
 **Purpose**: Create the script file with safety settings, cleanup trap, and structural skeleton
 
-- [ ] T001 Create `create-pr.sh` with shebang, `set -euo pipefail`, header comment, global variable declarations, `cleanup` function with `trap cleanup EXIT` for temp file removal, and empty `main` function stub. Make the file executable. Follow the script template from `.github/instructions/cp.shell.instructions.md`
+- [x] T001 Create `create-pr.sh` with shebang, `set -euo pipefail`, header comment, global variable declarations, `cleanup` function with `trap cleanup EXIT` for temp file removal, and empty `main` function stub. Make the file executable. Follow the script template from `.github/instructions/cp.shell.instructions.md`
 
 ---
 
@@ -27,10 +27,10 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Implement `validate_prerequisites` function in `create-pr.sh` that checks `git` is available (`command -v git`), `gh` CLI is installed (`command -v gh`) and authenticated (`gh auth status`), and `copilot` CLI is installed (`command -v copilot`) and functional. Exit with specific error messages from contracts/script-interface.md on any failure
-- [ ] T003 [P] Implement `get_remote_owner` helper function in `create-pr.sh` that extracts the GitHub owner from a remote URL, handling both HTTPS (`https://github.com/owner/repo.git`) and SSH (`git@github.com:owner/repo.git`) formats using the sed pattern from research.md section 10
-- [ ] T004 Implement `detect_remote_config` function in `create-pr.sh` that sets `MAIN_REMOTE`, `FORK_REMOTE`, `IS_FORK`, and `FORK_OWNER` global variables using the two-strategy algorithm: (1) if `upstream` remote exists, set `MAIN_REMOTE=upstream` and `FORK_REMOTE=origin`, (2) else if branch exists on a non-`origin` non-`upstream` remote via `git ls-remote --heads`, set `MAIN_REMOTE=origin` and `FORK_REMOTE=<detected>`, (3) else set `MAIN_REMOTE=origin` and `FORK_REMOTE=""`. Use `get_remote_owner` to populate `FORK_OWNER`
-- [ ] T005 Implement `determine_default_branch` function in `create-pr.sh` that sets the `DEFAULT_BRANCH` global variable by first trying `git symbolic-ref refs/remotes/${MAIN_REMOTE}/HEAD`, falling back to `git remote set-head ${MAIN_REMOTE} --auto` then retrying. Exit with error if default branch cannot be determined
+- [x] T002 Implement `validate_prerequisites` function in `create-pr.sh` that checks `git` is available (`command -v git`), `gh` CLI is installed (`command -v gh`) and authenticated (`gh auth status`), and `copilot` CLI is installed (`command -v copilot`) and functional. Exit with specific error messages from contracts/script-interface.md on any failure
+- [x] T003 [P] Implement `get_remote_owner` helper function in `create-pr.sh` that extracts the GitHub owner from a remote URL, handling both HTTPS (`https://github.com/owner/repo.git`) and SSH (`git@github.com:owner/repo.git`) formats using the sed pattern from research.md section 10
+- [x] T004 Implement `detect_remote_config` function in `create-pr.sh` that sets `MAIN_REMOTE`, `FORK_REMOTE`, `IS_FORK`, and `FORK_OWNER` global variables using the two-strategy algorithm: (1) if `upstream` remote exists, set `MAIN_REMOTE=upstream` and `FORK_REMOTE=origin`, (2) else if branch exists on a non-`origin` non-`upstream` remote via `git ls-remote --heads`, set `MAIN_REMOTE=origin` and `FORK_REMOTE=<detected>`, (3) else set `MAIN_REMOTE=origin` and `FORK_REMOTE=""`. Use `get_remote_owner` to populate `FORK_OWNER`
+- [x] T005 Implement `determine_default_branch` function in `create-pr.sh` that sets the `DEFAULT_BRANCH` global variable by first trying `git symbolic-ref refs/remotes/${MAIN_REMOTE}/HEAD`, falling back to `git remote set-head ${MAIN_REMOTE} --auto` then retrying. Exit with error if default branch cannot be determined
 
 **Checkpoint**: Foundation ready — user story implementation can begin
 
@@ -44,12 +44,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement `validate_preconditions` function in `create-pr.sh` with four ordered checks: (1) current branch is not `DEFAULT_BRANCH` via `git rev-parse --abbrev-ref HEAD`, (2) working directory is clean via `git status --porcelain`, (3) branch has commits ahead via `git rev-list --count`, (4) branch is pushed to at least one remote via `git ls-remote --heads`. Exit on first failure with error messages from contracts/script-interface.md
-- [ ] T007 [P] [US1] Implement `fetch_default_branch` function in `create-pr.sh` that runs `git fetch ${MAIN_REMOTE} ${DEFAULT_BRANCH}` and exits with a clear error if the fetch fails
-- [ ] T008 [US1] Implement `gather_diff_context` function in `create-pr.sh` that sets `DIFF_STAT` via `git diff --stat ${MAIN_REMOTE}/${DEFAULT_BRANCH}...HEAD`, `FULL_DIFF` via `git diff ${MAIN_REMOTE}/${DEFAULT_BRANCH}...HEAD`, and `COMMIT_LOG` via `git log --oneline ${MAIN_REMOTE}/${DEFAULT_BRANCH}..HEAD`. Initialize `PR_TEMPLATE` and `TEMPLATE_PATH` as empty strings
-- [ ] T009 [US1] Implement `generate_pr_content` function in `create-pr.sh` that constructs a prompt instructing the Copilot CLI to return a PR title on line 1 (noun phrase, max 72 chars, capitalized, no conventional commit prefix), blank line 2, and markdown description on lines 3+. Pipe diff stat, full diff, commit log, and PR template (if any) as context. Parse output to set `PR_TITLE` (line 1) and `PR_DESCRIPTION` (line 3+). Exit with error if either is empty
-- [ ] T010 [US1] Implement `create_pr` function in `create-pr.sh` for the non-fork path: write `PR_DESCRIPTION` to a temp file via `mktemp`, run `gh pr create --base ${DEFAULT_BRANCH} --head ${CURRENT_BRANCH} --title "${PR_TITLE}" --body-file "${body_file}"`, capture the PR URL, and exit with error if creation fails
-- [ ] T011 [US1] Wire up the `main` function in `create-pr.sh` to call all functions in order: `validate_prerequisites`, `detect_remote_config`, `determine_default_branch`, `validate_preconditions`, `fetch_default_branch`, `gather_diff_context`, `generate_pr_content`, `create_pr`. Add verbose output matching the output contract from contracts/script-interface.md (section separators, checkmarks for each step, final PR URL display)
+- [x] T006 [US1] Implement `validate_preconditions` function in `create-pr.sh` with four ordered checks: (1) current branch is not `DEFAULT_BRANCH` via `git rev-parse --abbrev-ref HEAD`, (2) working directory is clean via `git status --porcelain`, (3) branch has commits ahead via `git rev-list --count`, (4) branch is pushed to at least one remote via `git ls-remote --heads`. Exit on first failure with error messages from contracts/script-interface.md
+- [x] T007 [P] [US1] Implement `fetch_default_branch` function in `create-pr.sh` that runs `git fetch ${MAIN_REMOTE} ${DEFAULT_BRANCH}` and exits with a clear error if the fetch fails
+- [x] T008 [US1] Implement `gather_diff_context` function in `create-pr.sh` that sets `DIFF_STAT` via `git diff --stat ${MAIN_REMOTE}/${DEFAULT_BRANCH}...HEAD`, `FULL_DIFF` via `git diff ${MAIN_REMOTE}/${DEFAULT_BRANCH}...HEAD`, and `COMMIT_LOG` via `git log --oneline ${MAIN_REMOTE}/${DEFAULT_BRANCH}..HEAD`. Initialize `PR_TEMPLATE` and `TEMPLATE_PATH` as empty strings
+- [x] T009 [US1] Implement `generate_pr_content` function in `create-pr.sh` that constructs a prompt instructing the Copilot CLI to return a PR title on line 1 (noun phrase, max 72 chars, capitalized, no conventional commit prefix), blank line 2, and markdown description on lines 3+. Pipe diff stat, full diff, commit log, and PR template (if any) as context. Parse output to set `PR_TITLE` (line 1) and `PR_DESCRIPTION` (line 3+). Exit with error if either is empty
+- [x] T010 [US1] Implement `create_pr` function in `create-pr.sh` for the non-fork path: write `PR_DESCRIPTION` to a temp file via `mktemp`, run `gh pr create --base ${DEFAULT_BRANCH} --head ${CURRENT_BRANCH} --title "${PR_TITLE}" --body-file "${body_file}"`, capture the PR URL, and exit with error if creation fails
+- [x] T011 [US1] Wire up the `main` function in `create-pr.sh` to call all functions in order: `validate_prerequisites`, `detect_remote_config`, `determine_default_branch`, `validate_preconditions`, `fetch_default_branch`, `gather_diff_context`, `generate_pr_content`, `create_pr`. Add verbose output matching the output contract from contracts/script-interface.md (section separators, checkmarks for each step, final PR URL display)
 
 **Checkpoint**: Non-fork PR creation is fully functional. Script can be used for the most common workflow.
 
@@ -63,8 +63,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Extend `create_pr` function in `create-pr.sh` to handle fork PRs: when `IS_FORK` is `true`, construct `MAIN_REPO` as `owner/repo` from `MAIN_REMOTE` URL, run `gh pr create --base ${DEFAULT_BRANCH} --head ${FORK_OWNER}:${CURRENT_BRANCH} --repo ${MAIN_REPO} --title "${PR_TITLE}" --body-file "${body_file}"`. Ensure the branch is never pushed to the main repository
-- [ ] T013 [US2] Update verbose output in `main` function in `create-pr.sh` to display fork detection details: remote setup type (non-fork, clone-from-fork, clone-from-main-with-fork), main remote name, fork remote name or "none", and fork owner
+- [x] T012 [US2] Extend `create_pr` function in `create-pr.sh` to handle fork PRs: when `IS_FORK` is `true`, construct `MAIN_REPO` as `owner/repo` from `MAIN_REMOTE` URL, run `gh pr create --base ${DEFAULT_BRANCH} --head ${FORK_OWNER}:${CURRENT_BRANCH} --repo ${MAIN_REPO} --title "${PR_TITLE}" --body-file "${body_file}"`. Ensure the branch is never pushed to the main repository
+- [x] T013 [US2] Update verbose output in `main` function in `create-pr.sh` to display fork detection details: remote setup type (non-fork, clone-from-fork, clone-from-main-with-fork), main remote name, fork remote name or "none", and fork owner
 
 **Checkpoint**: Both fork and non-fork PR workflows are functional. All P1 user stories are complete.
 
@@ -78,9 +78,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T014 [P] [US3] Implement `find_pr_template` function in `create-pr.sh` that searches four standard locations in order (`.github/PULL_REQUEST_TEMPLATE.md`, `.github/pull_request_template.md`, `docs/PULL_REQUEST_TEMPLATE.md`, `PULL_REQUEST_TEMPLATE.md`), prints the path to stdout and returns 0 if found, returns 1 if not found
-- [ ] T015 [US3] Update `gather_diff_context` function in `create-pr.sh` to call `find_pr_template`, and if a template is found, read its contents into `PR_TEMPLATE` and set `TEMPLATE_PATH` to the discovered path
-- [ ] T016 [US3] Update the Copilot CLI prompt in `generate_pr_content` in `create-pr.sh` to include the PR template contents when `PR_TEMPLATE` is non-empty, instructing the Copilot CLI to follow the template structure and preserve checkboxes as checkboxes (not converting them to bullet lists)
+- [x] T014 [P] [US3] Implement `find_pr_template` function in `create-pr.sh` that searches four standard locations in order (`.github/PULL_REQUEST_TEMPLATE.md`, `.github/pull_request_template.md`, `docs/PULL_REQUEST_TEMPLATE.md`, `PULL_REQUEST_TEMPLATE.md`), prints the path to stdout and returns 0 if found, returns 1 if not found
+- [x] T015 [US3] Update `gather_diff_context` function in `create-pr.sh` to call `find_pr_template`, and if a template is found, read its contents into `PR_TEMPLATE` and set `TEMPLATE_PATH` to the discovered path
+- [x] T016 [US3] Update the Copilot CLI prompt in `generate_pr_content` in `create-pr.sh` to include the PR template contents when `PR_TEMPLATE` is non-empty, instructing the Copilot CLI to follow the template structure and preserve checkboxes as checkboxes (not converting them to bullet lists)
 
 **Checkpoint**: PR template detection and integration is functional. Generated descriptions follow template structure.
 
@@ -94,8 +94,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T017 [US4] Add existing PR detection to `validate_preconditions` in `create-pr.sh`: after the four ordered checks, query `gh pr list --head ${CURRENT_BRANCH} --json url --jq '.[0].url'` and if a PR exists, exit with `ERROR: A PR already exists for branch '${CURRENT_BRANCH}': ${existing_url}`
-- [ ] T018 [US4] Review and refine all error messages in `validate_preconditions` in `create-pr.sh` to match the exact messages from contracts/script-interface.md, ensuring each includes actionable remediation instructions (e.g., "Switch to a feature branch", "Commit or stash your changes", "Run 'git push' first")
+- [x] T017 [US4] Add existing PR detection to `validate_preconditions` in `create-pr.sh`: after the four ordered checks, query `gh pr list --head ${CURRENT_BRANCH} --json url --jq '.[0].url'` and if a PR exists, exit with `ERROR: A PR already exists for branch '${CURRENT_BRANCH}': ${existing_url}`
+- [x] T018 [US4] Review and refine all error messages in `validate_preconditions` in `create-pr.sh` to match the exact messages from contracts/script-interface.md, ensuring each includes actionable remediation instructions (e.g., "Switch to a feature branch", "Commit or stash your changes", "Run 'git push' first")
 
 **Checkpoint**: All pre-condition failures produce clear, actionable error messages. All P2 user stories are complete.
 
@@ -105,9 +105,9 @@
 
 **Purpose**: Final validation, linting, and documentation
 
-- [ ] T019 [P] Verify `create-pr.sh` passes `shellcheck` static analysis with no errors or warnings
-- [ ] T020 [P] Verify `create-pr.sh` follows all formatting rules from `.github/instructions/cp.shell.instructions.md` (4-space indentation, 80-char line length, `[[ ]]` conditionals, `"${var}"` quoting)
-- [ ] T021 Run quickstart.md validation: walk through all three workflow examples (non-fork, clone-from-fork, clone-from-main-with-fork) and verify verbose output matches the output contract from contracts/script-interface.md
+- [x] T019 [P] Verify `create-pr.sh` passes `shellcheck` static analysis with no errors or warnings
+- [x] T020 [P] Verify `create-pr.sh` follows all formatting rules from `.github/instructions/cp.shell.instructions.md` (4-space indentation, 80-char line length, `[[ ]]` conditionals, `"${var}"` quoting)
+- [x] T021 Run quickstart.md validation: walk through all three workflow examples (non-fork, clone-from-fork, clone-from-main-with-fork) and verify verbose output matches the output contract from contracts/script-interface.md
 
 ---
 
