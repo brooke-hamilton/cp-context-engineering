@@ -389,7 +389,7 @@ ${FULL_DIFF}"
 
     local copilot_output
     copilot_output=$(printf '%s\n' "${prompt}" \
-        | copilot --model "${COPILOT_MODEL}") || {
+        | copilot --silent --model "${COPILOT_MODEL}") || {
         echo "ERROR: Copilot CLI invocation failed." >&2
         exit 1
     }
