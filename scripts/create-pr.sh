@@ -253,7 +253,7 @@ validate_preconditions() {
     local main_url
     main_url=$(git remote get-url "${MAIN_REMOTE}")
     pr_check_repo=$(printf '%s\n' "${main_url}" \
-        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
+        | sed -E 's|\.git$||; s|.*[:/]([^/]+/[^/]+)$|\1|')
     local existing_url
     existing_url=$(
         gh pr list --head "${pr_head}" \
@@ -426,7 +426,7 @@ create_pr() {
     local main_url
     main_url=$(git remote get-url "${MAIN_REMOTE}")
     MAIN_REPO=$(printf '%s\n' "${main_url}" \
-        | sed -E 's|.*[:/]([^/]+/[^/]+?)(.git)?$|\1|')
+        | sed -E 's|\.git$||; s|.*[:/]([^/]+/[^/]+)$|\1|')
 
     local head_ref="${CURRENT_BRANCH}"
     if [[ "${BRANCH_REMOTE}" != "${MAIN_REMOTE}" ]]; then
