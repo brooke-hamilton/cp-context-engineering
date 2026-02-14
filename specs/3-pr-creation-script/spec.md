@@ -3,23 +3,33 @@
 **Spec Directory**: `specs/3-pr-creation-script`  
 **Created**: 2026-02-14  
 **Status**: Draft  
-**Input**: User description: "Convert the cp.create-pr prompt into a shell script that uses the Copilot API for model-generated content (PR title, description) while performing all git and GitHub CLI operations directly."
+**Input**: User description: "Convert the cp.create-pr prompt into a shell script that uses the GitHub Copilot CLI (`copilot`) for model-generated content (PR title, description) while performing all git and GitHub CLI operations directly."
 
 ## Clarifications
 
 ### Session 2026-02-14
 
-- Q: What is the specific invocation mechanism for AI-generated content (PR title, description)? → A: Direct REST API call to the Copilot API, since neither the GH CLI nor the Copilot CLI return formatted markdown text with line breaks.
-- Q: What is the truncation threshold for large diffs sent to the Copilot API? → A: 128K characters (~32K tokens). The `--stat` summary is always included; the full diff is truncated silently if it exceeds the limit.
-- Q: How does the script authenticate with the Copilot API? → A: Try `gh auth token` first, fall back to `GITHUB_TOKEN` environment variable. Exit with error if neither is available.
+- Q: What is the specific invocation mechanism for AI-generated content (PR title, description)? → A: The GitHub Copilot CLI (`copilot`), which accepts prompts and returns generated text. The script pipes context (diffs, commit logs) to the Copilot CLI for title and description generation.
+- Q: How does the script authenticate? → A: The script validates that the user is authenticated to both the `gh` CLI (via `gh auth status`) and the Copilot CLI before proceeding. If either authentication check fails, the script exits with a clear error message.
 - Q: Where does the script file live and how is it invoked? → A: Standalone script at the repo root as `create-pr.sh`, invoked with `./create-pr.sh`.
-- Q: Which API endpoint does the script use for AI-generated content? → A: Copilot Chat completions at `https://api.githubcopilot.com/chat/completions`, using the user's existing Copilot subscription.
+- Q: Should the PR be created as a draft or ready for review? → A: Always ready for review (no `--draft` flag).
+- Q: What is explicitly out of scope? → A: Labels, reviewer assignment, interactive title/description editing before creation, and multi-PR batch operations are all out of scope.
+- Q: What output does the script produce during normal execution? → A: Verbose — show all git commands, CLI interactions, and intermediate results, plus the final PR URL.
+- Q: Should the title and description be generated in one or two Copilot CLI calls? → A: Single call generating both. The output must use a parseable format so the script can extract the title and description separately for `gh pr create`.
+- Q: How is the Copilot CLI invoked? → A: As a standalone binary `copilot` on `$PATH`, not via `gh copilot` (which is deprecated). It is a separate CLI from `gh`.
 
 ## User Scenarios & Testing *(mandatory)*
 
+### Out of Scope
+
+- Assigning labels to the PR
+- Assigning reviewers to the PR
+- Interactive editing of the generated title or description before PR creation
+- Batch creation of multiple PRs in a single invocation
+
 ### User Story 1 - Create a PR from a non-fork branch (Priority: P1)
 
-A developer is working on a feature branch in a repository they own (no fork). They have committed and pushed all changes. They run the script, which validates the branch state, gathers commit messages and diffs, calls the Copilot API to generate a PR title and description, creates the PR via the GitHub CLI, and displays the PR URL.
+A developer is working on a feature branch in a repository they own (no fork). They have committed and pushed all changes. They run the script, which validates the branch state, gathers commit messages and diffs, uses the Copilot CLI (`copilot`) to generate a PR title and description, creates the PR via the GitHub CLI (`gh`), and displays the PR URL.
 
 **Why this priority**: This is the most common PR creation workflow and the core value of the script.
 
@@ -27,8 +37,8 @@ A developer is working on a feature branch in a repository they own (no fork). T
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is on a feature branch with all changes committed and pushed to `origin`, and the repository has no `upstream` remote and no other fork remotes, **When** the user runs the script, **Then** the script determines the default branch from `origin`, fetches the latest default branch from `origin`, gathers the diff and commit log between the current branch and the fetched default branch, sends them to the Copilot API for title/description generation, creates the PR via `gh pr create`, and displays the PR URL.
-2. **Given** the user is on a feature branch with all changes committed and pushed, and no PR template exists in the repository, **When** the user runs the script, **Then** the Copilot API generates a description using a standard format that includes a summary of changes, a list of modified files with brief descriptions, and relevant context from commit messages.
+1. **Given** the user is on a feature branch with all changes committed and pushed to `origin`, and the repository has no `upstream` remote and no other fork remotes, **When** the user runs the script, **Then** the script determines the default branch from `origin`, fetches the latest default branch from `origin`, gathers the diff and commit log between the current branch and the fetched default branch, passes them to the Copilot CLI (`copilot`) for title/description generation, creates the PR via `gh pr create`, and displays the PR URL.
+2. **Given** the user is on a feature branch with all changes committed and pushed, and no PR template exists in the repository, **When** the user runs the script, **Then** the Copilot CLI generates a description using a standard format that includes a summary of changes, a list of modified files with brief descriptions, and relevant context from commit messages.
 
 ---
 
@@ -56,7 +66,7 @@ In both cases, the script determines the correct default branch, creates the PR 
 
 ### User Story 3 - Use a PR template when one exists (Priority: P2)
 
-A developer runs the script in a repository that has a PR template file. The script detects the template, reads its contents, and passes it to the Copilot API so the generated PR description follows the template's structure, including properly marked checkboxes.
+A developer runs the script in a repository that has a PR template file. The script detects the template, reads its contents, and passes it to the Copilot CLI so the generated PR description follows the template's structure, including properly marked checkboxes.
 
 **Why this priority**: Many teams use PR templates for consistency, and the script should respect them when present.
 
@@ -64,9 +74,9 @@ A developer runs the script in a repository that has a PR template file. The scr
 
 **Acceptance Scenarios**:
 
-1. **Given** a repository has a PR template at `.github/PULL_REQUEST_TEMPLATE.md`, **When** the user runs the script, **Then** the script reads the template and includes it in the context sent to the Copilot API for description generation.
+1. **Given** a repository has a PR template at `.github/PULL_REQUEST_TEMPLATE.md`, **When** the user runs the script, **Then** the script reads the template and includes it in the context passed to the Copilot CLI for description generation.
 2. **Given** a repository has a PR template at any of the standard locations (`.github/PULL_REQUEST_TEMPLATE.md`, `.github/pull_request_template.md`, `docs/PULL_REQUEST_TEMPLATE.md`, `PULL_REQUEST_TEMPLATE.md`), **When** the user runs the script, **Then** the script finds and uses the first available template.
-3. **Given** the PR template contains checkboxes, **When** the Copilot API generates the description, **Then** the checkboxes are preserved as checkboxes (not converted to bullet lists) and marked appropriately based on the changes.
+3. **Given** the PR template contains checkboxes, **When** the Copilot CLI generates the description, **Then** the checkboxes are preserved as checkboxes (not converted to bullet lists) and marked appropriately based on the changes.
 
 ---
 
@@ -97,9 +107,9 @@ Before taking any other action, the script validates four ordered pre-conditions
 ### Edge Cases
 
 - What happens when the user is on the default branch (e.g., `main`)? The script should exit with an error indicating that PRs cannot be created from the default branch.
-- What happens when `gh` CLI is not installed or not authenticated? The script should detect this early and exit with a clear message.
-- What happens when the Copilot API is not reachable or authentication fails? The script should detect this and exit with a clear message.
-- What happens when the diff is extremely large? The script should handle large diffs gracefully by truncating the full diff to 128K characters (~32K tokens) while always including the `--stat` summary. Truncation is silent (no user warning).
+- What happens when `gh` CLI is not installed or not authenticated? The script should detect this early (via `gh auth status`) and exit with a clear message.
+- What happens when the user is not authenticated to the Copilot CLI? The script should detect this early and exit with a clear message.
+- What happens when the Copilot CLI (`copilot`) is not installed or not functional? The script should detect this early and exit with a clear message.
 - What happens when there are no commits between the current branch and the default branch? The script should exit with a message indicating there are no changes to create a PR for.
 - What happens when the git remote `origin` is not configured? The script should exit with an error.
 - What happens when the branch has been pushed to multiple non-main remotes? The script should select one (first found or most recently pushed) and proceed.
@@ -119,19 +129,19 @@ Before taking any other action, the script validates four ordered pre-conditions
 - **FR-006a**: Script MUST fetch the latest default branch from the appropriate remote (`upstream` or `origin`) before comparing the current branch to the default branch for diffs and commit logs. This ensures the diff reflects the current state of the target branch, not a stale local copy.
 - **FR-007**: Script MUST search for a PR template at these locations in order: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/pull_request_template.md`, `docs/PULL_REQUEST_TEMPLATE.md`, `PULL_REQUEST_TEMPLATE.md`.
 - **FR-008**: Script MUST gather the commit log between the current branch and the default branch.
-- **FR-009**: Script MUST gather the diff (both `--stat` summary and full diff) between the current branch and the default branch. If the full diff exceeds 128K characters, the script MUST silently truncate it while always preserving the complete `--stat` summary.
-- **FR-010**: Script MUST call the Copilot API (via REST) to generate a PR title, providing the diff and commit log as context.
+- **FR-009**: Script MUST gather the diff (both `--stat` summary and full diff) between the current branch and the default branch.
+- **FR-010**: Script MUST use a single Copilot CLI (`copilot`) invocation to generate both the PR title and description, providing the diff, commit log, and PR template (if found) as context. The prompt MUST instruct the Copilot CLI to return the output in a parseable format (e.g., first line is the title, remaining lines are the description) so the script can extract each field separately.
 - **FR-011**: The generated PR title MUST follow these formatting rules: noun phrase (not starting with a verb), max 72 characters, first word capitalized, no conventional commit prefixes.
-- **FR-012**: Script MUST call the Copilot API (via REST) to generate a PR description, providing the diff, commit log, and PR template (if found) as context.
+- **FR-012**: The script MUST parse the Copilot CLI output to extract the title and description as separate values for passing to `gh pr create`.
 - **FR-013**: When a PR template is provided as context, the generated description MUST follow the template's structure and preserve checkboxes as checkboxes.
 - **FR-014**: When no PR template exists, the generated description MUST include a summary of changes, a list of modified files with brief descriptions, and relevant context from commit messages.
-- **FR-015**: Script MUST verify `gh` CLI is installed and authenticated before attempting PR creation.
-- **FR-016**: Script MUST create the PR using `gh pr create` with the correct base and head branches.
+- **FR-015**: Script MUST verify `gh` CLI is installed and authenticated (via `gh auth status`) before attempting PR creation. Script MUST also verify that the Copilot CLI (`copilot`) is installed and that the user is authenticated to it before attempting content generation.
+- **FR-016**: Script MUST create the PR using `gh pr create` with the correct base and head branches. The PR MUST be created as ready for review (not as a draft).
 - **FR-017**: When a fork configuration is detected (either via `upstream` remote or by discovering the branch on a non-`origin` remote), the PR MUST be created from the fork's branch to the main repository's default branch, without pushing the branch to the main repository.
 - **FR-018**: Script MUST check if a PR already exists for the current branch and exit with the existing PR URL if so.
-- **FR-019**: Script MUST display a success message with the PR URL upon completion.
+- **FR-019**: Script MUST display verbose output during execution, including git commands being run, CLI interactions, and intermediate results, followed by a success message with the PR URL upon completion.
 - **FR-020**: Script MUST exit immediately with a clear, descriptive error message when any step fails.
-- **FR-021**: Script MUST obtain an authentication token for the Copilot API by first attempting `gh auth token`; if that fails, it MUST check for a `GITHUB_TOKEN` environment variable. If neither source provides a token, the script MUST exit with a clear error message indicating how to authenticate.
+- **FR-021**: Script MUST verify the Copilot CLI (`copilot`) is installed and the user is authenticated to it. If the Copilot CLI is not installed or the user is not authenticated, the script MUST exit with a clear error message indicating how to install and authenticate.
 
 ### Key Entities
 
@@ -139,7 +149,7 @@ Before taking any other action, the script validates four ordered pre-conditions
 - **Default Branch**: The target branch for the PR (e.g., `main` or `master`), determined from `upstream` (fork) or `origin` (non-fork).
 - **Remote Configuration**: The set of git remotes (`origin`, `upstream`, and any additional remotes) that determine fork status and target repository. Three configurations are auto-detected: (1) non-fork (`origin` only, branch pushed to `origin`), (2) clone-from-fork (`origin` = fork, `upstream` = main repo, detected by presence of `upstream`), (3) clone-from-main with fork (`origin` = main repo, branch pushed to a different remote, detected by discovering the branch on a non-`origin` remote).
 - **PR Template**: An optional markdown file in the repository that defines the structure for PR descriptions.
-- **Diff Context**: The combination of `git diff` output and `git log` output between the current branch and the default branch, used as input for AI-generated content.
+- **Diff Context**: The combination of `git diff` output and `git log` output between the current branch and the default branch, used as input for the Copilot CLI to generate PR content.
 
 ## Success Criteria *(mandatory)*
 
@@ -155,9 +165,8 @@ Before taking any other action, the script validates four ordered pre-conditions
 
 - The script is a standalone bash file located at `create-pr.sh` in the repository root, invoked with `./create-pr.sh`. No installation step or `$PATH` modification is required.
 
-- The Copilot API is accessible via REST at `https://api.githubcopilot.com/chat/completions` (using `curl`) and the user has a valid authentication token obtained via `gh auth token` (preferred) or the `GITHUB_TOKEN` environment variable (fallback). The API accepts a chat completions format (system/user messages) and returns JSON responses containing the generated text. The user's existing Copilot subscription covers usage.
-- The `gh` CLI is the primary mechanism for creating PRs (no MCP tool dependency since this is a standalone script).
+- The GitHub Copilot CLI (`copilot`) is a standalone binary on the user's `$PATH`, separate from the `gh` CLI (the deprecated `gh copilot` extension is not used). The user is authenticated to it. The script validates authentication for both the `gh` CLI (via `gh auth status`) and the Copilot CLI before proceeding. The script passes context (diffs, commit logs, prompts) to the Copilot CLI and receives generated text output.
+- The `gh` CLI is the primary mechanism for creating PRs, and the Copilot CLI (`copilot`) is the mechanism for AI-generated content (no MCP tool dependency or direct REST API calls since this is a standalone script).
 - The script runs in a bash-compatible shell environment.
 - The user has appropriate GitHub permissions to create PRs in the target repository.
-- For large diffs that may exceed Copilot API token limits, the script truncates the full diff at 128K characters (~32K tokens) while always including the complete `--stat` summary. Truncation is silent.
-- The PR title formatting rules (noun phrase, no verb prefix, no conventional commits) are enforced via the prompt sent to the Copilot API, not by the script parsing the output.
+- The PR title formatting rules (noun phrase, no verb prefix, no conventional commits) are enforced via the prompt sent to the Copilot CLI, not by the script parsing the output.

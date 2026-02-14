@@ -32,5 +32,6 @@
 ## Notes
 
 - All items pass validation. Spec is ready for `/speckit.clarify` or `/speckit.plan`.
-- The spec references specific git and gh CLI commands (e.g., `git remote -v`, `gh pr create`) because these are inherent to the problem domain — the feature IS a shell script wrapping these tools. This does not constitute implementation leakage.
+- The spec references specific git, gh, and copilot CLI commands because these are inherent to the problem domain — the feature IS a shell script wrapping these tools. This does not constitute implementation leakage.
+- Updated 2026-02-14: Changed from direct Copilot REST API calls to GitHub Copilot CLI (`copilot`) for all AI-generated content (PR title, description). Authentication is handled by the Copilot CLI itself rather than manual token management.
 - The Copilot CLI interaction model (how context is passed, response format) is left as an assumption rather than a requirement, since the exact CLI interface may vary.
