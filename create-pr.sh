@@ -219,9 +219,14 @@ validate_preconditions() {
     # 4. Branch pushed to at least one remote
     local pushed="false"
     local pushed_to=""
+    local remote_sha=""
     while IFS= read -r remote; do
-        if git ls-remote --heads "${remote}" "${CURRENT_BRANCH}" \
-            2>/dev/null | grep -q .; then
+        remote_sha=$(
+            git ls-remote --heads "${remote}" \
+                "${CURRENT_BRANCH}" 2>/dev/null \
+            | awk '{print $1}'
+        )
+        if [[ -n "${remote_sha}" ]]; then
             pushed="true"
             pushed_to="${remote}"
             break
@@ -229,8 +234,18 @@ validate_preconditions() {
     done < <(git remote)
 
     if [[ "${pushed}" != "true" ]]; then
-        echo "ERROR: Branch '${CURRENT_BRANCH}' has not been" \
-            "pushed to any remote. Run 'git push' first." >&2
+        echo "ERROR: Branch '${CURRENT_BRANCH}' has not" \
+            "been pushed to any remote." \
+            "Run 'git push' first." >&2
+        exit 1
+    fi
+
+    local local_sha
+    local_sha=$(git rev-parse HEAD)
+    if [[ "${local_sha}" != "${remote_sha}" ]]; then
+        echo "ERROR: Branch '${CURRENT_BRANCH}' has" \
+            "unpushed commits." \
+            "Run 'git push' first." >&2
         exit 1
     fi
     echo "  ✓ Branch pushed to '${pushed_to}'"
