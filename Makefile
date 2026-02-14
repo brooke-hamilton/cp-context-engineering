@@ -1,6 +1,6 @@
 # Context Engineering Guide - Makefile
 
-.PHONY: slides serve clean help pr
+.PHONY: slides serve clean help pr push
 
 PORT := 8080
 SLIDES_URL := http://localhost:$(PORT)/context-engineering-slides.html
@@ -13,6 +13,7 @@ help:
 	@echo "  make clean             - Stop any running HTTP servers"
 	@echo "  make commit            - Stage and commit changes with AI-generated message"
 	@echo "  make commit DRY_RUN=1  - Generate commit message without committing"
+	@echo "  make push              - Push current branch to origin"
 	@echo "  make pr                - Create a GitHub PR with AI-generated description"
 	@echo "  make pr DRY_RUN=1      - Generate PR content without creating the PR"
 	@echo "  make help              - Show this help message"
@@ -54,3 +55,7 @@ pr:
 # Stage and commit changes with an AI-generated commit message
 commit:
 	@bash scripts/commit.sh $(if $(DRY_RUN),--dry-run)
+
+# Push current branch to origin
+push:
+	@git push origin
