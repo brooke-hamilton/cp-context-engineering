@@ -90,6 +90,73 @@ validate_preconditions() {
 }
 
 # ---------------------------------------------------------------------------
+# validate_branch
+# ---------------------------------------------------------------------------
+validate_branch() {
+    echo "Checking branch..."
+
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    # Detect default branch from remote HEAD; fall back to
+    # matching "main" or "master" when the remote is unknown.
+    local default_branch=""
+    if git rev-parse --verify refs/remotes/origin/HEAD \
+        >/dev/null 2>&1; then
+        default_branch=$(git symbolic-ref \
+            refs/remotes/origin/HEAD \
+            | sed 's|refs/remotes/origin/||')
+    fi
+
+    local on_default=false
+    if [[ -n "${default_branch}" ]]; then
+        if [[ "${current_branch}" == "${default_branch}" ]]; then
+            on_default=true
+        fi
+    else
+        if [[ "${current_branch}" == "main" \
+            || "${current_branch}" == "master" ]]; then
+            on_default=true
+        fi
+    fi
+
+    if [[ "${on_default}" == true ]]; then
+        echo "  WARNING: Currently on default branch" \
+            "'${current_branch}'."
+        echo "  Direct commits to the default branch" \
+            "are not allowed."
+        echo ""
+
+        if [[ ! -t 0 ]]; then
+            echo "ERROR: Cannot prompt for branch" \
+                "name — stdin is not a terminal." >&2
+            exit 1
+        fi
+
+        local new_branch=""
+        read -rp "  Enter a new branch name: " new_branch
+
+        if [[ -z "${new_branch}" ]]; then
+            echo "ERROR: Branch name cannot be empty." >&2
+            exit 1
+        fi
+
+        if ! git check-ref-format --branch "${new_branch}" \
+            >/dev/null 2>&1; then
+            echo "ERROR: '${new_branch}' is not a valid" \
+                "branch name." >&2
+            exit 1
+        fi
+
+        git checkout -b "${new_branch}"
+        echo "  ✓ Created and switched to branch" \
+            "'${new_branch}'"
+    else
+        echo "  ✓ On branch '${current_branch}'"
+    fi
+}
+
+# ---------------------------------------------------------------------------
 # stage_changes
 # ---------------------------------------------------------------------------
 stage_changes() {
@@ -216,6 +283,7 @@ main() {
 
     validate_prerequisites
     validate_preconditions
+    validate_branch
     gather_diff_context
     generate_commit_message
 
