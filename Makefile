@@ -69,7 +69,7 @@ build-extension:
 
 # Package the extension as a VSIX file
 package-extension: build-extension 
-	@cd extensions/copilot-tools-sync && npx vsce package --allow-missing-repository
+	@cd extensions/copilot-tools-sync && npx vsce package
 
 # Build, package, and install the extension into VS Code and VS Code Insiders
 install-extension: package-extension

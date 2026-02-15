@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/extensions/copilot-tools-sync"
+    schedule:
+      interval: "weekly"

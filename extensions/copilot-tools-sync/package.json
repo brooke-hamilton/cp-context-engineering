@@ -4,6 +4,10 @@
   "description": "Sync Copilot customization files from a GitHub repository",
   "version": "0.0.1",
   "publisher": "brooke-hamilton",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brooke-hamilton/cp-context-engineering.git"
+  },
   "engines": {
     "vscode": "^1.100.0"
   },
