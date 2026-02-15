@@ -1,5 +1,5 @@
 ---
-name: copilot-agent-creator
+name: cp.agent-creator
 description: Expert agent for creating effective GitHub Copilot custom agents. Provides guidance on agent file format, frontmatter options, prompt engineering, tools configuration, handoffs, and best practices.
 tools:
   ['vscode', 'read', 'agent', 'edit', 'search', 'web', 'todo']

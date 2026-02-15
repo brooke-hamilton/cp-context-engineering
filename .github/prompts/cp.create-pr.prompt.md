@@ -1,6 +1,6 @@
 ---
 description: Automates the creation of a GitHub pull request from the current branch with validation and content generation
-name: brooke.create-pr
+name: cp.create-pr
 tools: [vscode, execute, read, agent, edit, search, web, todo]
 ---
 

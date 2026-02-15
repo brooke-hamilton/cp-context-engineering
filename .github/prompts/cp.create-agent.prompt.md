@@ -1,5 +1,5 @@
 ---
-agent: copilot-agent-creator
+agent: cp.agent-creator
 ---
 
 Create a new GitHub Copilot custom agent based on the user's description. Walk through the following steps:

@@ -1,0 +1,48 @@
+{
+  "name": "copilot-tools-sync",
+  "displayName": "Copilot Tools Sync",
+  "description": "Sync Copilot customization files from a GitHub repository",
+  "version": "0.0.1",
+  "publisher": "brooke-hamilton",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brooke-hamilton/cp-context-engineering.git"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onCommand:copilotToolsSync.sync"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "copilotToolsSync.sync",
+        "title": "Sync Copilot Tools"
+      }
+    ],
+    "configuration": {
+      "title": "Copilot Tools Sync",
+      "properties": {
+        "copilotToolsSync.repository": {
+          "type": "string",
+          "default": "brooke-hamilton/cp-context-engineering",
+          "description": "GitHub repository (owner/repo) to sync Copilot tools from. Must be a public repository."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.9.2"
+  }
+}
