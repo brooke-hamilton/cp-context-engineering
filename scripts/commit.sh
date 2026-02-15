@@ -47,13 +47,10 @@ trap cleanup EXIT
 # validate_prerequisites
 # ---------------------------------------------------------------------------
 validate_prerequisites() {
-    echo "Checking prerequisites..."
-
     if ! command -v git >/dev/null; then
         echo "ERROR: git is not installed." >&2
         exit 1
     fi
-    echo "  ✓ git is available"
 
     if ! command -v copilot >/dev/null; then
         echo "ERROR: Copilot CLI (copilot) is not found on PATH." \
@@ -66,35 +63,28 @@ validate_prerequisites() {
             "Check authentication." >&2
         exit 1
     fi
-    echo "  ✓ Copilot CLI (copilot) is available"
 }
 
 # ---------------------------------------------------------------------------
 # validate_preconditions
 # ---------------------------------------------------------------------------
 validate_preconditions() {
-    echo "Validating pre-conditions..."
-
     if ! git rev-parse --is-inside-work-tree >/dev/null; then
         echo "ERROR: Not inside a git repository." >&2
         exit 1
     fi
-    echo "  ✓ Inside a git repository"
 
     if [[ -z "$(git status --porcelain)" ]]; then
         echo "ERROR: No changes detected." \
             "Nothing to commit." >&2
         exit 1
     fi
-    echo "  ✓ Changes detected"
 }
 
 # ---------------------------------------------------------------------------
 # validate_branch
 # ---------------------------------------------------------------------------
 validate_branch() {
-    echo "Checking branch..."
-
     local current_branch
     current_branch=$(git branch --show-current)
 
@@ -151,8 +141,6 @@ validate_branch() {
         git checkout -b "${new_branch}"
         echo "  ✓ Created and switched to branch" \
             "'${new_branch}'"
-    else
-        echo "  ✓ On branch '${current_branch}'"
     fi
 }
 
@@ -277,10 +265,6 @@ print_dry_run() {
 # main
 # ---------------------------------------------------------------------------
 main() {
-    echo "${SEPARATOR}"
-    echo "Commit Script"
-    echo "${SEPARATOR}"
-
     validate_prerequisites
     validate_preconditions
     validate_branch
@@ -292,10 +276,6 @@ main() {
     else
         stage_changes
         do_commit
-
-        echo "${SEPARATOR}"
-        echo "Commit complete!"
-        echo "${SEPARATOR}"
     fi
 }
 

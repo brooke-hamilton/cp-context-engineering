@@ -17,9 +17,6 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 readonly COPILOT_MODEL="gpt-5.3-codex"
 
-SEPARATOR=$(printf '=%.0s' {1..76})
-readonly SEPARATOR
-
 DIFF_STAT=""
 FULL_DIFF=""
 UNTRACKED_FILES=""
@@ -29,13 +26,10 @@ BRANCH_NAME=""
 # validate_prerequisites
 # ---------------------------------------------------------------------------
 validate_prerequisites() {
-    echo "Checking prerequisites..."
-
     if ! command -v git >/dev/null; then
         echo "ERROR: git is not installed." >&2
         exit 1
     fi
-    echo "  ✓ git is available"
 
     if ! command -v copilot >/dev/null; then
         echo "ERROR: Copilot CLI (copilot) is not found on PATH." \
@@ -48,20 +42,16 @@ validate_prerequisites() {
             "Check authentication." >&2
         exit 1
     fi
-    echo "  ✓ Copilot CLI (copilot) is available"
 }
 
 # ---------------------------------------------------------------------------
 # validate_preconditions
 # ---------------------------------------------------------------------------
 validate_preconditions() {
-    echo "Validating pre-conditions..."
-
     if ! git rev-parse --is-inside-work-tree >/dev/null; then
         echo "ERROR: Not inside a git repository." >&2
         exit 1
     fi
-    echo "  ✓ Inside a git repository"
 
     # Must be on the default branch
     local current_branch
@@ -94,7 +84,6 @@ validate_preconditions() {
             "default branch." >&2
         exit 1
     fi
-    echo "  ✓ On default branch '${current_branch}'"
 
     # Must have uncommitted, staged, or untracked changes
     if [[ -z "$(git status --porcelain)" ]]; then
@@ -102,7 +91,6 @@ validate_preconditions() {
             "Nothing to create a branch for." >&2
         exit 1
     fi
-    echo "  ✓ Changes detected"
 }
 
 # ---------------------------------------------------------------------------
@@ -206,19 +194,11 @@ create_branch() {
 # main
 # ---------------------------------------------------------------------------
 main() {
-    echo "${SEPARATOR}"
-    echo "Branch Script"
-    echo "${SEPARATOR}"
-
     validate_prerequisites
     validate_preconditions
     gather_diff_context
     generate_branch_name
     create_branch
-
-    echo "${SEPARATOR}"
-    echo "Branch '${BRANCH_NAME}' created!"
-    echo "${SEPARATOR}"
 }
 
 main
