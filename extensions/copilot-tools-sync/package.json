@@ -15,9 +15,6 @@
     "Other"
   ],
   "main": "./out/extension.js",
-  "activationEvents": [
-    "onCommand:copilotToolsSync.sync"
-  ],
   "contributes": {
     "commands": [
       {

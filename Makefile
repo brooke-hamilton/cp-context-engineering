@@ -1,6 +1,6 @@
 # Context Engineering Guide - Makefile
 
-.PHONY: slides serve clean help pr push build-extension package-extension install-extension
+.PHONY: slides serve clean help pr push branch build-extension package-extension install-extension
 
 PORT := 8080
 SLIDES_URL := http://localhost:$(PORT)/context-engineering-slides.html
@@ -11,6 +11,7 @@ help:
 	@echo "  make slides            - Start server and open slideshow in browser"
 	@echo "  make serve             - Start HTTP server on port $(PORT)"
 	@echo "  make clean             - Stop any running HTTP servers"
+	@echo "  make branch            - Create a branch with AI-generated name from local changes"
 	@echo "  make commit            - Stage and commit changes with AI-generated message"
 	@echo "  make commit DRY_RUN=1  - Generate commit message without committing"
 	@echo "  make push              - Push current branch to origin"
@@ -54,6 +55,10 @@ clean:
 # Create a GitHub PR with AI-generated title and description
 pr:
 	@bash scripts/create-pr.sh $(if $(DRY_RUN),--dry-run)
+
+# Create a branch with an AI-generated name from local changes
+branch:
+	@bash scripts/branch.sh
 
 # Stage and commit changes with an AI-generated commit message
 commit:
