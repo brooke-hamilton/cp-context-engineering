@@ -60,13 +60,10 @@ trap cleanup EXIT
 # validate_prerequisites
 # ---------------------------------------------------------------------------
 validate_prerequisites() {
-    echo "Checking prerequisites..."
-
     if ! command -v git &>/dev/null; then
         echo "ERROR: git is not installed." >&2
         exit 1
     fi
-    echo "  ✓ git is available"
 
     if ! command -v gh &>/dev/null; then
         echo "ERROR: GitHub CLI (gh) is not installed." \
@@ -79,7 +76,6 @@ validate_prerequisites() {
             "Run 'gh auth login'." >&2
         exit 1
     fi
-    echo "  ✓ GitHub CLI (gh) is authenticated"
 
     if ! command -v copilot &>/dev/null; then
         echo "ERROR: Copilot CLI (copilot) is not found on PATH." \
@@ -92,7 +88,6 @@ validate_prerequisites() {
             "Check authentication." >&2
         exit 1
     fi
-    echo "  ✓ Copilot CLI (copilot) is available"
 }
 
 # ---------------------------------------------------------------------------
@@ -155,8 +150,6 @@ determine_default_branch() {
 # validate_preconditions
 # ---------------------------------------------------------------------------
 validate_preconditions() {
-    echo "Validating pre-conditions..."
-
     CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # 1. Not on default branch
@@ -165,7 +158,6 @@ validate_preconditions() {
             "'${DEFAULT_BRANCH}'. Switch to a feature branch." >&2
         exit 1
     fi
-    echo "  ✓ On feature branch '${CURRENT_BRANCH}'"
 
     # 2. Clean working directory
     if [[ -n "$(git status --porcelain)" ]]; then
@@ -173,7 +165,6 @@ validate_preconditions() {
             "stash your changes before creating a PR." >&2
         exit 1
     fi
-    echo "  ✓ Working directory is clean"
 
     # 3. Commits ahead of default branch
     local count
@@ -184,7 +175,6 @@ validate_preconditions() {
             "Nothing to create a PR for." >&2
         exit 1
     fi
-    echo "  ✓ ${count} commit(s) ahead of '${DEFAULT_BRANCH}'"
 
     # 4. Branch pushed to at least one remote
     local -a found_remotes=()
@@ -240,7 +230,6 @@ validate_preconditions() {
             "Run 'git push' first." >&2
         exit 1
     fi
-    echo "  ✓ Branch pushed to '${BRANCH_REMOTE}'"
 
     # 5. No existing PR
     local pr_head="${CURRENT_BRANCH}"
@@ -265,7 +254,6 @@ validate_preconditions() {
             "'${CURRENT_BRANCH}': ${existing_url}" >&2
         exit 1
     fi
-    echo "  ✓ No existing PR for this branch"
 }
 
 # ---------------------------------------------------------------------------
@@ -460,10 +448,6 @@ create_pr() {
 # main
 # ---------------------------------------------------------------------------
 main() {
-    echo "${SEPARATOR}"
-    echo "PR Creation Script"
-    echo "${SEPARATOR}"
-
     validate_prerequisites
     detect_remote_config
     determine_default_branch
@@ -484,10 +468,7 @@ main() {
     else
         create_pr
 
-        echo "${SEPARATOR}"
-        echo "PR created successfully!"
-        echo "URL: ${PR_URL}"
-        echo "${SEPARATOR}"
+        echo "${PR_URL}"
     fi
 }
 
