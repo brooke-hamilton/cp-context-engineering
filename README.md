@@ -28,6 +28,10 @@ Reusable slash-command prompts that orchestrate multi-step workflows. See the [p
 
 Shell scripts that rely on Copilot for part of their functionality. See the [scripts folder](scripts/).
 
+### VS Code extension
+
+The [Copilot Tools Sync](extensions/copilot-tools-sync/) extension syncs custom prompts, instructions, and agent files from this repo into my local VS Code user profile directories. This is a personal utility I built for my own workflow — it is not intended as a general-purpose tool.
+
 ### Context engineering materials
 
 Notes on context engineering (`docs/context-engineering-guide.md`) covering context engineering patterns for AI systems. These notes are not authoratative or useful.
